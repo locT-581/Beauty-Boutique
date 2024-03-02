@@ -1,0 +1,18 @@
+{
+  "cSpell.words": [
+    "APIKEY",
+    "Auths",
+    "Firestore",
+    "Italianno",
+    "middlewares",
+    "reduxjs",
+    "signin",
+    "signout",
+    "signup",
+    "tailwindcss",
+    "toastify"
+  ],
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "commentTranslate.targetLanguage": "vi"
+}

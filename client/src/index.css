@@ -1,0 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=Cabin:ital,wdth,wght@0,75..100,400..700;1,75..100,400..700&family=Italianno&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: none !important;
+}
+
+body {
+  margin: 0;
+  font-family: "Cabin", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: current !important;
+}
+
+::selection {
+  background-color: #ffcfd280;
+}
+
+label {
+  user-select: none;
+}
+
+@layer base {
+  /* body {
+    @apply bg-background font-fontCodePro;
+  } */
+  ::-webkit-scrollbar {
+    @apply bg-white w-[7px];
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-white;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-red-400 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-700;
+  }
+}
+
+@supports (text-size-adjust: none) {
+  html {
+    -webkit-text-size-adjust: auto;
+    text-size-adjust: none;
+  }
+}
