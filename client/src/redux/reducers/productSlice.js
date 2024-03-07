@@ -48,10 +48,20 @@ export const deleteManyProductsAsync = createAsyncThunk(
   }
 );
 
+// Add empty product
+export const addEmptyProductAsync = createAsyncThunk(
+  "product/addEmptyProduct",
+  async (product) => {
+    const data = await productAPI.addEmptyProduct(product);
+    return data;
+  }
+);
+
 const productSlice = createSlice({
   name: "product",
   initialState: {
     products: [],
+    currentProduct: {},
     loading: false,
     error: "",
     message: "",
@@ -126,6 +136,19 @@ const productSlice = createSlice({
         state.message = action.payload.message;
       })
       .addCase(deleteManyProductsAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(addEmptyProductAsync.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(addEmptyProductAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentProduct = action.payload.product;
+        state.message = action.payload.message;
+        state.error = "";
+      })
+      .addCase(addEmptyProductAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

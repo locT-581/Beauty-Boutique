@@ -18,9 +18,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { visuallyHidden } from "@mui/utils";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  clearError,
-  clearMessage,
+  clearError as clearErrorProduct,
+  clearMessage as clearMessageProduct,
   deleteManyProductsAsync,
+  deleteProductAsync,
   getAllProductAsync,
   updateProductAsync,
 } from "../../redux/reducers/productSlice";
@@ -36,10 +37,20 @@ import Button from "../Button";
 import AddIcon from "@mui/icons-material/Add";
 import SearchText from "../Search";
 import BAlertDialog from "../BAlertDialog";
+import { useLocation } from "react-router-dom";
+import {
+  clearError as clearErrorBlogs,
+  clearMessage as clearMessageBlogs,
+  deleteBlog,
+  deleteManyBlogs,
+  getAllBlog,
+  updateBlog,
+} from "../../redux/reducers/blogSlice";
 
 function descendingComparator(a, b, orderBy) {
   const first = a[orderBy];
   const second = b[orderBy];
+
   if (typeof first === "object" && typeof second === "object") {
     if (first[Object.keys(first)[0]] < second[Object.keys(second)[0]]) {
       return -1;
@@ -80,26 +91,48 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-const headCells = [
+const headCellsProduct = [
   {
-    id: "product",
+    id: "firstCol",
     label: "Sản phẩm",
   },
   {
-    id: "displayMode",
+    id: "secondCol",
     label: "Hiển thị",
   },
   {
-    id: "createAt",
+    id: "thirdCol",
     label: "Ngày tạo",
   },
   {
-    id: "stock",
+    id: "fourthCol",
     label: "Tồn kho",
   },
   {
-    id: "price",
+    id: "fifthCol",
     label: "Giá bán",
+  },
+];
+const headCellsBlog = [
+  {
+    id: "firstCol",
+    label: "Bài viết",
+  },
+  {
+    id: "secondCol",
+    label: "Hiển thị",
+  },
+  {
+    id: "thirdCol",
+    label: "Ngày tạo",
+  },
+  {
+    id: "fourthCol",
+    label: "Lượt xem",
+  },
+  {
+    id: "fifthCol",
+    label: "Lượt thích",
   },
 ];
 
@@ -116,6 +149,16 @@ function EnhancedTableHead(props) {
     onRequestSort(event, property);
   };
 
+  const [headCells, setHeadCells] = useState([]);
+  const { pathname } = useLocation();
+  useEffect(() => {
+    if (pathname === "/quanlysanpham") {
+      setHeadCells(headCellsProduct);
+    }
+    if (pathname === "/quanlybaiviet") {
+      setHeadCells(headCellsBlog);
+    }
+  }, [pathname]);
   return (
     <TableHead>
       <TableRow>
@@ -168,7 +211,7 @@ EnhancedTableHead.propTypes = {
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected, handleDeleteSelected } = props;
+  const { numSelected, handleDeleteSelected, handleAddNew } = props;
 
   return (
     <Toolbar
@@ -205,7 +248,12 @@ function EnhancedTableToolbar(props) {
         <div className="w-full flex justify-end">
           <div className="w-1/2 flex justify-end ">
             <SearchText />
-            <Button className="px-4 mx-2">
+            <Button
+              onClick={() => {
+                handleAddNew();
+              }}
+              className="px-4 mx-2"
+            >
               Tạo mới
               <AddIcon />
             </Button>
@@ -220,68 +268,109 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable() {
+export default function EnhancedTable({ handleAddNew, handleEdit }) {
   const dispatch = useDispatch();
-  const { products, error, message } = useSelector(
-    (state) => state.productSlice
-  );
+  const {
+    products,
+    error: errorProduct,
+    message: messageProduct,
+  } = useSelector((state) => state.productSlice);
+  const {
+    blogs,
+    error: errorBlog,
+    message: messageBlog,
+  } = useSelector((state) => state.blogSlice);
   const [order, setOrder] = useState("desc");
-  const [orderBy, setOrderBy] = useState("createAt");
+  const [orderBy, setOrderBy] = useState("thirdCol");
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(8);
   const [rows, setRows] = useState([]);
   const modes = useRef([]);
+  const { pathname } = useLocation();
 
   const getDisplayMode = async () => {
     try {
-      const config = {
+      const { data } = await axios.get("/api/v1/product/get-display-mode", {
         headers: {
           "Content-Type": "application/json",
         },
-      };
-      const { data } = await axios.get(
-        "/api/v1/product/get-display-mode",
-        config
-      );
+      });
       modes.current = data.displayMode;
     } catch (error) {
       console.log(error);
     }
   };
+
   useEffect(() => {
-    if (error) {
-      toast.error(error, toastConfig);
-      dispatch(clearError());
+    if (errorProduct) {
+      toast.error(errorProduct, toastConfig);
+      dispatch(clearErrorProduct());
     }
-    if (message) {
-      toast.success(message, toastConfig);
-      dispatch(clearMessage());
+    if (messageProduct) {
+      toast.success(messageProduct, toastConfig);
+      dispatch(clearMessageProduct());
       dispatch(getAllProductAsync());
     }
-  }, [error, message, dispatch]);
+    if (errorBlog) {
+      toast.error(errorBlog, toastConfig);
+      dispatch(clearErrorBlogs());
+    }
+    if (messageBlog) {
+      toast.success(messageBlog, toastConfig);
+      dispatch(clearMessageBlogs());
+      dispatch(getAllBlog());
+    }
+  }, [errorProduct, messageProduct, errorBlog, messageBlog, dispatch]);
 
   useEffect(() => {
     getDisplayMode();
-    dispatch(getAllProductAsync());
-  }, [dispatch]);
+    if (pathname === "/quanlysanpham") {
+      dispatch(getAllProductAsync());
+    } else if (pathname === "/quanlybaiviet") {
+      dispatch(getAllBlog());
+    }
+  }, [dispatch, pathname]);
 
   useEffect(() => {
-    setRows(
-      products.map((product) => ({
-        id: product.id,
-        product: {
-          name: product.name,
-          avatar: product.avatar,
-          description: product.description,
-        },
-        displayMode: product.displayMode,
-        createAt: product.timestamp._seconds,
-        stock: product.stock,
-        price: product.price,
-      }))
-    );
-  }, [products]);
+    const rowContent = [];
+    if (pathname === "/quanlysanpham") {
+      products.forEach((product) => {
+        rowContent.push({
+          id: product.id,
+          firstCol: {
+            name: product.name,
+            avatar: product.avatar,
+            description: product.description,
+          },
+          secondCol: product.displayMode,
+          thirdCol: product.timestamp._seconds,
+          fourthCol: product.stock,
+          fifthCol: product.price,
+        });
+      });
+    } else if (pathname === "/quanlybaiviet") {
+      blogs.forEach((blog) => {
+        rowContent.push({
+          id: blog.id,
+          firstCol: {
+            name: blog.title,
+            avatar: blog.avatar,
+            description: blog?.content
+              ? new DOMParser()
+                  .parseFromString(blog?.content, "text/html")
+                  .querySelector("body").firstElementChild.innerText
+              : "",
+          },
+          secondCol: blog.displayMode,
+          thirdCol: blog.createAt._seconds,
+          fourthCol: blog.views,
+          fifthCol: blog.likes,
+        });
+      });
+    }
+    setRows(rowContent);
+  }, [pathname, products, blogs]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -342,20 +431,30 @@ export default function EnhancedTable() {
   );
 
   const handleChangeDisplayMode = (event, id) => {
-    dispatch(updateProductAsync({ id, displayMode: event.target.value }));
+    console.log(pathname);
+    if (pathname === "/quanlysanpham") {
+      dispatch(updateProductAsync({ id, displayMode: event.target.value }));
+    } else if (pathname === "/quanlybaiviet") {
+      console.log(event.target.value);
+      dispatch(updateBlog({ id, displayMode: event.target.value }));
+    }
   };
 
   const handleDeleteSelected = async () => {
-    await dispatch(deleteManyProductsAsync({ ids: selected }));
+    if (pathname === "/quanlysanpham") {
+      await dispatch(deleteManyProductsAsync({ ids: selected }));
+    } else if (pathname === "/quanlybaiviet") {
+      await dispatch(deleteManyBlogs({ ids: selected }));
+    }
     setSelected([]);
   };
 
-  const editProduct = (id) => {
-    console.log(id);
-  };
-
   const quickDeleteAProduct = (id) => {
-    console.log(id);
+    if (pathname === "/quanlysanpham") {
+      dispatch(deleteProductAsync(id));
+    } else if (pathname === "/quanlybaiviet") {
+      dispatch(deleteBlog(id));
+    }
   };
 
   const [focusInput, setFocusInput] = useState(null);
@@ -389,6 +488,7 @@ export default function EnhancedTable() {
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
         <EnhancedTableToolbar
+          handleAddNew={handleAddNew}
           numSelected={selected.length}
           handleDeleteSelected={handleDeleteSelected}
         />
@@ -412,7 +512,7 @@ export default function EnhancedTable() {
                 const labelId = `enhanced-table-checkbox-${index}`;
                 // Change timestamp to date
 
-                const date = new Date(row.createAt * 1000);
+                const date = new Date(row.thirdCol * 1000);
                 const formattedDate = `${date.getDate()}/${
                   date.getMonth() + 1
                 }/${date.getFullYear()}`;
@@ -442,33 +542,35 @@ export default function EnhancedTable() {
                       padding="none"
                     >
                       <div className="w-full flex py-2">
-                        {row.product.avatar && (
-                          <img
-                            src={row.product.avatar}
-                            alt={row.product.name}
-                            className="w-[10%] mx-3  object-cover aspect-square"
-                          />
-                        )}
+                        <div className="w-[10%] h-[10%] mx-3  ">
+                          {row.firstCol.avatar && (
+                            <img
+                              src={row.firstCol.avatar}
+                              alt={row.firstCol.name}
+                              className="w-full object-cover aspect-square"
+                            />
+                          )}
+                        </div>
                         <div>
                           <p className="font-semibold">
                             {
                               // Truncate name
-                              row.product.name.length > 50
-                                ? `${row.product.name
+                              row.firstCol.name.length > 50
+                                ? `${row.firstCol.name
                                     .substring(0, 50)
                                     .toUpperCase()}...`
-                                : row.product.name.toUpperCase()
+                                : row.firstCol.name.toUpperCase()
                             }
                           </p>
                           <p>
                             {
                               // Truncate description
-                              row.product.description.length > 40
-                                ? `${row.product.description.substring(
+                              row.firstCol.description.length > 40
+                                ? `${row.firstCol.description.substring(
                                     0,
                                     40
                                   )}...`
-                                : row.product.description
+                                : row.firstCol.description
                             }
                           </p>
                         </div>
@@ -476,7 +578,7 @@ export default function EnhancedTable() {
                     </TableCell>
                     <TableCell align="center">
                       <select
-                        value={row.displayMode}
+                        value={row.secondCol}
                         onChange={(e) => {
                           handleChangeDisplayMode(e, row.id);
                         }}
@@ -516,20 +618,22 @@ export default function EnhancedTable() {
                           </button>
                         </div>
                       ) : (
-                        <span className="w-full">{row.stock}</span>
+                        <span className="w-full">{row.fourthCol}</span>
                       )}
                     </TableCell>
                     <TableCell align="center">
-                      {new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      }).format(row.price)}
+                      {pathname === "/quanlysanpham"
+                        ? new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          }).format(row.fifthCol)
+                        : row.fifthCol}
                     </TableCell>
                     <TableCell align="center">
                       <div className="flex">
                         <button
                           onClick={() => {
-                            editProduct(row.id);
+                            handleEdit(row.id);
                           }}
                           type="button"
                           className="hover:underline  border-r-2 px-2 py-1 border-slate-300"

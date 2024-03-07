@@ -97,6 +97,7 @@ function Login() {
             <span className="text-pink">*</span>Mật khẩu
           </label>
           <input
+            autoComplete="new-password"
             onChange={handleChangePassword}
             value={password}
             required

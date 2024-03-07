@@ -33,6 +33,11 @@ input:-webkit-autofill:active {
   background-color: #ffcfd280;
 }
 
+textarea,
+input {
+  outline: none;
+}
+
 label {
   user-select: none;
 }
@@ -42,7 +47,7 @@ label {
     @apply bg-background font-fontCodePro;
   } */
   ::-webkit-scrollbar {
-    @apply bg-white w-[7px];
+    @apply bg-white w-[7px] h-[7px];
   }
   ::-webkit-scrollbar-track {
     @apply bg-white;

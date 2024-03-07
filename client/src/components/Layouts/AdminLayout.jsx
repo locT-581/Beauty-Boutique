@@ -1,12 +1,11 @@
 import { useSelector } from "react-redux";
-import EnhancedTable from "../../UI/EnhancedTable";
 import SideBarAdmin from "../Menu/SideBarAdmin";
 import loadingSVG from "../../assets/SVG/loading-svg.json";
 import lottieConfig from "../../config/lottieConfig";
 import Lottie from "react-lottie";
 import { Backdrop } from "@mui/material";
 
-function AdminLayout() {
+function AdminLayout({ children }) {
   const { loading } = useSelector((state) => state.productSlice);
   return (
     <>
@@ -32,12 +31,7 @@ function AdminLayout() {
       )}
       <div className="w-full flex h-[100vh]">
         <SideBarAdmin />
-        <div className="w-10/12 pl-5 pt-16 absolute right-0">
-          <h3 className="text-2xl font-semibold px-10">Danh sách sản phẩm</h3>
-          <div className="pr-[5%] ">
-            <EnhancedTable />
-          </div>
-        </div>
+        <div className="w-10/12 pl-5 pt-16 absolute right-0">{children}</div>
       </div>
     </>
   );

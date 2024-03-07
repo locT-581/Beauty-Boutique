@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 import Logo from "../../../UI/Icon/Logo";
 import StoreOutlinedIcon from "@mui/icons-material/StoreOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
@@ -7,21 +7,27 @@ import ConfirmationNumberOutlinedIcon from "@mui/icons-material/ConfirmationNumb
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { userLogoutAsync } from "../../../redux/reducers/authSlice";
 
 function SideBarAdmin() {
   const dispatch = useDispatch();
+  const { pathname } = useLocation();
   useEffect(() => {
-    const url = window.location.pathname;
-    console.log(url.split("/")[1]);
-    const active = document.getElementById(url.split("/")[1]);
+    const active = document.getElementById(pathname.split("/")[1]);
     if (active) {
+      // remove all active class
+      const activeList = document.querySelectorAll(".bg-soft-pink");
+      activeList.forEach((item) => {
+        item.classList.remove("bg-soft-pink", "border-l-4", "border-pink");
+        item.classList.add("hover:bg-soft-pink", "border-b-[1px]");
+      });
+
       active.classList.add("bg-soft-pink", "border-l-4", "border-pink");
       active.classList.remove("hover:bg-soft-pink", "border-b-[1px]");
     }
-  }, []);
+  }, [pathname]);
 
   const handleLogout = () => {
     dispatch(userLogoutAsync());
@@ -35,52 +41,62 @@ function SideBarAdmin() {
         </div>
         <nav className="mt-14">
           <ul>
-            <li
-              id="product-management"
-              className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
-            >
-              <StoreOutlinedIcon className="mx-2" />
-              Sản phẩm
-            </li>
-            <li
-              id="blog-management"
-              className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
-            >
-              <NoteAltOutlinedIcon className="mx-2" />
-              Bài viết
-            </li>
-            <li
-              id="user-management"
-              className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
-            >
-              <PeopleAltOutlinedIcon className="mx-2" />
-              Khách hàng
-            </li>
-            <li
-              id="voucher-management"
-              className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
-            >
-              <ConfirmationNumberOutlinedIcon className="mx-2" />
-              Voucher
-            </li>
-            <li
-              id="analysis-management"
-              className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
-            >
-              <BarChartOutlinedIcon className="mx-2" />
-              Thống kê
-            </li>
+            <Link to="/quanlysanpham">
+              <li
+                id="quanlysanpham"
+                className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
+              >
+                <StoreOutlinedIcon className="mx-2" />
+                Sản phẩm
+              </li>
+            </Link>
+            <Link to="/quanlybaiviet">
+              <li
+                id="quanlybaiviet"
+                className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
+              >
+                <NoteAltOutlinedIcon className="mx-2" />
+                Bài viết
+              </li>
+            </Link>
+            <Link to="/quanlykhachhang">
+              <li
+                id="quanlykhachhang"
+                className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
+              >
+                <PeopleAltOutlinedIcon className="mx-2" />
+                Khách hàng
+              </li>
+            </Link>
+            <Link to="/quanlymagiamgia">
+              <li
+                id="quanlymagiamgia"
+                className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
+              >
+                <ConfirmationNumberOutlinedIcon className="mx-2" />
+                Voucher
+              </li>
+            </Link>
+            <Link to="/quanlythongke">
+              <li
+                id="quanlythongke"
+                className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
+              >
+                <BarChartOutlinedIcon className="mx-2" />
+                Thống kê
+              </li>
+            </Link>
           </ul>
         </nav>
       </div>
       <div>
         <ul>
-          <li className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]">
-            <Link to="/home">
+          <Link to="/trangchu">
+            <li className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]">
               <HomeOutlinedIcon className="mx-2" />
               Trang chủ
-            </Link>
-          </li>
+            </li>
+          </Link>
           <li className="hover:bg-soft-pink py-3 cursor-pointer pl-2">
             <button type="button" onClick={handleLogout}>
               <LogoutOutlinedIcon className="mx-2" />
@@ -93,4 +109,4 @@ function SideBarAdmin() {
   );
 }
 
-export default SideBarAdmin;
+export default memo(SideBarAdmin);

@@ -11,7 +11,7 @@ function AdminMenu() {
   };
   return (
     <div className="w-52 flex flex-col bg-white text-black py-1">
-      <Link to="/product-management">
+      <Link to="/quanlysanpham">
         <Button
           color="white"
           className="w-full hover:bg-soft-pink hover:text-black text-base font-fontCabin px-6 py-2 text-start"
@@ -20,7 +20,7 @@ function AdminMenu() {
         </Button>
       </Link>
       <hr />
-      <Link to="/blog-management">
+      <Link to="/quanlybaiviet">
         <Button
           color="white"
           className="w-full hover:bg-soft-pink hover:text-black text-start text-base font-fontCabin px-6 py-2"

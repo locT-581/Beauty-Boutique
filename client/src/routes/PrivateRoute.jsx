@@ -12,7 +12,7 @@ const PrivateRoute = ({ children }) => {
         (isAuthenticated === true && user.isAdmin ? (
           children
         ) : (
-          <Navigate to="/home" />
+          <Navigate to="/trangchu" />
         ))}
     </>
   );

@@ -5,12 +5,16 @@
     "Firestore",
     "Italianno",
     "middlewares",
+    "quanlybaiviet",
+    "quanlysanpham",
     "reduxjs",
     "signin",
     "signout",
     "signup",
     "tailwindcss",
-    "toastify"
+    "TINYMCE",
+    "toastify",
+    "trangchu"
   ],
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",

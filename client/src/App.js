@@ -1,13 +1,22 @@
-import { Fragment, Suspense } from "react";
+import { Fragment, Suspense, useEffect } from "react";
 import Logo from "./UI/Icon/LogoSpin";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { privateRouter, publicRouter } from "./routes";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import PrivateRoute from "./routes/PrivateRoute";
 
 function App() {
+  const { pathname } = useLocation();
+  // always scroll to top on route/path change
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, [pathname]);
   return (
     <Suspense
       fallback={
@@ -56,7 +65,7 @@ function App() {
               element={
                 <PrivateRoute>
                   <Layout>
-                    <Page />
+                    <Page title={route.title} />
                   </Layout>
                 </PrivateRoute>
               }

@@ -17,6 +17,17 @@ export const updateBlog = createAsyncThunk(
   }
 );
 
+// Get all blog
+export const getAllBlog = createAsyncThunk("blog/getAllBlog", async () => {
+  const data = await blogAPI.getAllBlog();
+  return data;
+});
+// Get blog by id
+export const getBlogById = createAsyncThunk("blog/getBlogById", async (id) => {
+  const data = await blogAPI.getBlogById(id);
+  return data;
+});
+
 export const deleteBlog = createAsyncThunk(
   "blog/deleteBlog",
   async (blogId, thunkAPI) => {
@@ -24,11 +35,28 @@ export const deleteBlog = createAsyncThunk(
     return data;
   }
 );
+// Delete many products
+export const deleteManyBlogs = createAsyncThunk(
+  "blog/deleteManyBlogs",
+  async ({ ids }) => {
+    const data = await blogAPI.deleteManyBlogs({ ids });
+    return data;
+  }
+);
+
+export const getBlogs = createAsyncThunk(
+  "blog/getBlogs",
+  async ({ page, limit, search }) => {
+    const data = await blogAPI.getBlogs({ page, limit, search });
+    return data;
+  }
+);
 
 const blogSlice = createSlice({
   name: "blogSlice",
   initialState: {
-    blog: {},
+    blogs: [],
+    currentBlog: {},
     loading: false,
     isUpdated: false,
     error: "",
@@ -37,6 +65,12 @@ const blogSlice = createSlice({
   reducers: {
     clearError: (state) => {
       state.error = "";
+    },
+    clearMessage: (state) => {
+      state.message = "";
+    },
+    clearCurrentBlog: (state) => {
+      state.currentBlog = {};
     },
   },
   extraReducers: (builder) => {
@@ -48,22 +82,22 @@ const blogSlice = createSlice({
       .addCase(addEmptyBlog.fulfilled, (state, action) => {
         state.loading = false;
         state.isUpdated = action.payload.success; // success: true or false
-        state.blog = action.payload.blog;
+        state.currentBlog = action.payload.blog;
       })
       .addCase(addEmptyBlog.rejected, (state, action) => {
         state.loading = false;
-        state.isUpdated = action.payload.success; // success: true or false
+        state.isUpdated = false;
         state.error = action.error.message;
       })
       .addCase(updateBlog.pending, (state) => {
         state.loading = true;
         state.isUpdated = false;
-        state.message = "";
       })
       .addCase(updateBlog.fulfilled, (state, action) => {
         state.loading = false;
         state.isAuthenticated = true;
         state.isUpdated = action.payload.success;
+        state.currentBlog = action.payload.blog;
         state.message = action.payload.message;
       })
       .addCase(updateBlog.rejected, (state, action) => {
@@ -73,21 +107,70 @@ const blogSlice = createSlice({
       })
       .addCase(deleteBlog.pending, (state) => {
         state.loading = true;
-        state.isUpdated = false;
-        state.message = "";
       })
       .addCase(deleteBlog.fulfilled, (state, action) => {
         state.loading = false;
         state.isUpdated = action.payload.success;
+        state.message = action.payload.message;
       })
       .addCase(deleteBlog.rejected, (state, action) => {
         state.loading = false;
         state.isUpdated = false;
+        state.error = action.error.message;
+      })
+      .addCase(getAllBlog.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getAllBlog.fulfilled, (state, action) => {
+        state.loading = false;
+        state.blogs = action.payload.blogs;
+        state.message = action.payload.message;
+      })
+      .addCase(getAllBlog.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(getBlogById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getBlogById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentBlog = action.payload.blog;
+        state.message = action.payload.message;
+      })
+      .addCase(getBlogById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(deleteManyBlogs.pending, (state) => {
+        state.loading = true;
+        state.message = "";
+      })
+      .addCase(deleteManyBlogs.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isUpdated = action.payload.success;
+        state.message = action.payload.message;
+      })
+      .addCase(deleteManyBlogs.rejected, (state, action) => {
+        state.loading = false;
+        state.isUpdated = false;
+        state.error = action.error.message;
+      })
+      .addCase(getBlogs.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getBlogs.fulfilled, (state, action) => {
+        state.loading = false;
+        state.blogs = action.payload.blogs;
+        state.message = action.payload.message;
+      })
+      .addCase(getBlogs.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.error.message;
       });
   },
 });
 
 const { actions, reducer } = blogSlice;
-export const { clearError, updateReset } = actions;
+export const { clearError, clearMessage, clearCurrentBlog } = actions;
 export default reducer;

@@ -27,26 +27,22 @@ export const addProduct = catchAsync(async (req, res, next) => {
   const db = getFirestore();
   const productCollection = db.collection("products");
 
-  // Check any field is empty
-  if (!name || !description || !price || !ingredients || !category || !stock) {
-    return next(new ErrorHandler("Please fill in all fields", 400));
-  }
   // Check product exist by name
   const product = await productCollection.where("name", "==", name).get();
   if (!product.empty) {
-    return next(new ErrorHandler("Product already exists", 400));
+    return next(new ErrorHandler("Tên sản phẩm đã tồn tại", 400));
   }
 
   const newProduct = {
-    name,
-    description,
-    price,
-    imageUrls,
-    ingredients,
-    category,
-    stock,
-    avatar,
-    displayMode,
+    name: name || "",
+    description: description || "",
+    price: price || 0,
+    imageUrls: imageUrls || [],
+    ingredients: ingredients || [],
+    category: category || "",
+    stock: stock || 0,
+    avatar: avatar || "",
+    displayMode: displayMode || "public",
     soldQuantity: 0,
     timestamp: FieldValue.serverTimestamp(),
   };
@@ -54,11 +50,11 @@ export const addProduct = catchAsync(async (req, res, next) => {
   // Add product into Database
   productCollection
     .add(newProduct)
-    .then(() => {
+    .then((doc) => {
       console.log("Add product successfully");
       res.status(200).json({
         success: true,
-        product: newProduct,
+        product: { id: doc.id, ...newProduct },
       });
     })
     .catch((error) => {
@@ -86,7 +82,7 @@ export const removeProduct = catchAsync(async (req, res, next) => {
       console.log("Remove product successfully");
       res.status(200).json({
         success: true,
-        message: "Product Removed",
+        message: "Đã xóa thành công",
       });
     })
     .catch((error) => {
@@ -102,13 +98,13 @@ export const deleteManyProducts = catchAsync(async (req, res, next) => {
 
   const { ids } = req.body;
   if (!ids) {
-    return next(new ErrorHandler("Please select products to delete", 400));
+    return next(new ErrorHandler("Chọn sản phẩm cần xóa", 400));
   }
 
   ids.forEach(async (id) => {
     const product = await productCollection.doc(id).get();
     if (product.empty) {
-      return next(new ErrorHandler("Product Not Found", 404));
+      return next(new ErrorHandler("Không tìm thấy sản phẩm", 404));
     }
     productCollection
       .doc(id)
@@ -151,6 +147,7 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
     });
 });
 
+// Get product
 export const getProducts = catchAsync(async (req, res, next) => {
   const { page = 1, limit = 8, search = "" } = req.query;
   const db = getFirestore();
@@ -193,7 +190,7 @@ export const getProductById = catchAsync(async (req, res, next) => {
     .get()
     .then((product) => {
       if (product.empty) {
-        return next(new ErrorHandler("Product Not Found", 404));
+        return next(new ErrorHandler("Không tìm thấy sản phẩm", 404));
       }
       res.status(200).json({
         success: true,
@@ -214,7 +211,7 @@ export const updateProduct = catchAsync(async (req, res, next) => {
 
   const product = await productCollection.doc(productId).get();
   if (product.empty) {
-    return next(new ErrorHandler("Product Not Found", 404));
+    return next(new ErrorHandler("Không tìm thấy sản phẩm", 404));
   }
 
   const {
@@ -278,12 +275,12 @@ export const addToCart = catchAsync(async (req, res, next) => {
 
   const product = await productCollection.doc(productId).get();
   if (product.empty) {
-    return next(new ErrorHandler("Product Not Found", 404));
+    return next(new ErrorHandler("Không tìm thấy sản phẩm", 404));
   }
 
   const user = getAuth(authClient);
   if (!user) {
-    return next(new ErrorHandler("Please login to add product to cart", 401));
+    return next(new ErrorHandler("Vui lòng đăng nhập", 401));
   }
 
   const { uid } = user;
@@ -297,7 +294,7 @@ export const addToCart = catchAsync(async (req, res, next) => {
       console.log("Add product to cart successfully");
       res.status(200).json({
         success: true,
-        message: "Add product to cart successfully",
+        message: "Đã thêm sản phẩm vào giỏ hàng",
       });
     })
     .catch((error) => {
@@ -314,14 +311,12 @@ export const removeFromCart = catchAsync(async (req, res, next) => {
 
   const product = await productCollection.doc(productId).get();
   if (product.empty) {
-    return next(new ErrorHandler("Product Not Found", 404));
+    return next(new ErrorHandler("Không tìm thấy sản phẩm", 404));
   }
 
   const user = getAuth(authClient);
   if (!user) {
-    return next(
-      new ErrorHandler("Please login to remove product from cart", 401)
-    );
+    return next(new ErrorHandler("Vui lòng đăng nhập", 401));
   }
 
   const { uid } = user;
@@ -334,7 +329,7 @@ export const removeFromCart = catchAsync(async (req, res, next) => {
       console.log("Remove product from cart successfully");
       res.status(200).json({
         success: true,
-        message: "Remove product from cart successfully",
+        message: "Đã xóa sản phẩm khỏi giỏ hàng",
       });
     })
     .catch((error) => {
@@ -376,14 +371,12 @@ export const updateProductInCart = catchAsync(async (req, res, next) => {
 
   const product = await productCollection.doc(productId).get();
   if (product.empty) {
-    return next(new ErrorHandler("Product Not Found", 404));
+    return next(new ErrorHandler("Không tìm thấy sản phẩm", 404));
   }
 
   const user = getAuth(authClient);
   if (!user) {
-    return next(
-      new ErrorHandler("Please login to update product in cart", 401)
-    );
+    return next(new ErrorHandler("Vui lòng đăng nhập ", 401));
   }
 
   const { uid } = user;
@@ -397,7 +390,7 @@ export const updateProductInCart = catchAsync(async (req, res, next) => {
       console.log("Update product in cart successfully");
       res.status(200).json({
         success: true,
-        message: "Update product in cart successfully",
+        message: "Đã cập nhật",
       });
     })
     .catch((error) => {

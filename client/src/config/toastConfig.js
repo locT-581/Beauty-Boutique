@@ -1,6 +1,6 @@
 const toastConfig = {
   position: "bottom-right",
-  autoClose: 2500,
+  autoClose: 1800,
   draggable: true,
   draggablePercent: 60,
   hideProgressBar: true,

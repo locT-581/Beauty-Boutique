@@ -90,7 +90,26 @@ export const deleteManyProducts = async ({ ids }) => {
   }
 };
 
-const useAPI = {
+const addEmptyProduct = async (product = {}) => {
+  try {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const { data } = await axios.post(
+      "/api/v1/product/upload",
+      product,
+      config
+    );
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
+
+const productAPI = {
+  addEmptyProduct,
   getAllProduct,
   getProducts,
   updateProduct,
@@ -98,4 +117,4 @@ const useAPI = {
   deleteManyProducts,
 };
 
-export default useAPI;
+export default productAPI;

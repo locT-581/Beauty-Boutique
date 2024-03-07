@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { getProductsAsync } from "../../redux/reducers/productSlice";
 import { memo } from "react";
+import { useLocation } from "react-router-dom";
+import { getBlogs } from "../../redux/reducers/blogSlice";
 
 function SearchText() {
+  const { pathname } = useLocation();
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
   const handleChangeSearch = (e) => {
@@ -13,7 +16,11 @@ function SearchText() {
   useEffect(() => {
     const timeOutId = setTimeout(() => {
       if (document.activeElement === document.querySelector("input")) {
-        dispatch(getProductsAsync({ search }));
+        if (pathname.includes("sanpham")) {
+          dispatch(getProductsAsync({ search }));
+        } else if (pathname.includes("baiviet")) {
+          dispatch(getBlogs({ search }));
+        }
       }
     }, 800);
 
@@ -21,6 +28,7 @@ function SearchText() {
       clearTimeout(timeOutId);
     };
   }, [search, dispatch]);
+
   return (
     <div className="pr-1 pl-4 py-1 w-[30%] mx-3 transition-all focus-within:w-1/2 flex justify-between border rounded-full">
       <input

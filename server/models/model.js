@@ -30,4 +30,5 @@ export const Blog = {
   likes: 0,
   views: 0,
   avatar: "",
+  displayMode: "",
 };
