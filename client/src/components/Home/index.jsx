@@ -10,7 +10,41 @@ import Header from "../Header";
 import "./styles.css";
 import Footer from "../Footer";
 import ProductCarousel from "../ProductCarousel";
+import Clarifai from "clarifai";
+import { useState } from "react";
+
+const app = new Clarifai.App({
+  apiKey: "62336b1b5fec411eb3cefe5dbbc5dcf2",
+});
 function Home() {
+  const [predictions, setPredictions] = useState([]);
+
+  const predictImage = async (imageURL) => {
+    const app = new Clarifai.App({
+      apiKey: "YOUR_API_KEY_HERE",
+    });
+
+    try {
+      const response = await app.models.predict(
+        Clarifai.GENERAL_MODEL,
+        imageURL
+      );
+      setPredictions(response.outputs[0].data.concepts);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      predictImage(reader.result);
+    };
+
+    reader.readAsDataURL(file);
+  };
   return (
     <main className="overflow-x-hidden">
       <div id="banner-home" className="w-[100vw] h-[100vh]">
@@ -186,6 +220,17 @@ function Home() {
               Chúng tôi đã từng làm việc với một lượng khách hàng lớn khác nhau
             </p>
           </div>
+        </div>
+      </div>
+      <div>
+        <input type="file" accept="image/*" onChange={handleImageUpload} />
+        <div>
+          <h2>Predictions:</h2>
+          <ul>
+            {predictions.map((prediction) => (
+              <li key={prediction.id}>{prediction.name}</li>
+            ))}
+          </ul>
         </div>
       </div>
       <Footer />
