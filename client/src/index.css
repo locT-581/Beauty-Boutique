@@ -41,6 +41,9 @@ input {
 label {
   user-select: none;
 }
+img {
+  user-select: none;
+}
 
 @layer base {
   /* body {

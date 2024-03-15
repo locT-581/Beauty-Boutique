@@ -21,11 +21,14 @@ function ProductManagement({ title }) {
     dispatch(addEmptyProductAsync({ name: "Chưa có tên" }));
     setMoveToEdit(true);
   };
+  const handleEdit = (id) => {
+    navigate(`/chinhsuasanpham/${id}`);
+  };
   return (
     <>
       <h3 className="text-2xl font-semibold px-10">{title}</h3>
       <div className="pr-[5%] ">
-        <EnhancedTable handleAddNew={handleAddNew} />
+        <EnhancedTable handleAddNew={handleAddNew} handleEdit={handleEdit} />
       </div>
     </>
   );

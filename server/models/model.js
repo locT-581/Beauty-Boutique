@@ -32,3 +32,10 @@ export const Blog = {
   avatar: "",
   displayMode: "",
 };
+
+export const Flower = {
+  id: "",
+  name: "",
+  description: "",
+  imageUrls: [],
+};
