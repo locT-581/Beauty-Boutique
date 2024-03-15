@@ -5,7 +5,7 @@ import Lottie from "react-lottie";
 import here from "../../assets/SVG/hereicon.json";
 import CloseIcon from "@mui/icons-material/Close";
 
-function InputImages() {
+function InputImages({ updateImages }) {
   const [images, setImages] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -19,6 +19,7 @@ function InputImages() {
   };
 
   useEffect(() => {
+    updateImages(images);
     if (activeIndex === images.length - 1) {
       // Scroll to the end of the list
       const container = document.querySelector(".slick-image");
@@ -27,7 +28,7 @@ function InputImages() {
         behavior: "smooth",
       });
     }
-  }, [images.length, activeIndex]);
+  }, [images.length, activeIndex, updateImages]);
 
   const handleClick = (e, index) => {
     setActiveIndex(index);

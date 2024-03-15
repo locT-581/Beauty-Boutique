@@ -5,15 +5,35 @@ import SplitButton from "../../../UI/SliptButton";
 import { useNavigate } from "react-router-dom";
 
 import InputImages from "../../../UI/InputImages";
-import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
+import TextInputWithSuggests from "../../../UI/TextInputWithSuggests";
+import { useEffect, useRef, useState } from "react";
+import Close from "@mui/icons-material/Close";
+import CheckIcon from "@mui/icons-material/Check";
+import Check from "@mui/icons-material/Check";
 
 const options = ["Lưu và đăng tải", "Lưu ở chế độ riêng tư", "Hủy bỏ"];
 
 function EditProduct() {
   const navigate = useNavigate();
   const { loading } = useSelector((state) => state.productSlice);
-  const [ingredients, setIngredients] = useState([{ name: "", quantity: 0 }]);
+
+  const [images, setImages] = useState([]);
+  const updateImages = (newImages) => {
+    setImages(newImages);
+  };
+
+  const [ingredients, setIngredients] = useState([]);
+  const updateIngredients = (newIngredientsName, confirm = false) => {
+    setIngredients((pre) => {
+      const newIngredients = [...pre];
+      newIngredients[newIngredients.length - 1].name = newIngredientsName;
+      if (confirm) {
+        newIngredients[newIngredients.length - 1].confirm = true;
+      }
+      return newIngredients;
+    });
+  };
 
   const handleAdd = (selectedIndex) => {
     if (selectedIndex === 0) {
@@ -21,6 +41,21 @@ function EditProduct() {
     } else if (selectedIndex === 2) {
     }
   };
+
+  const handleChangeQuantity = (index) => (e) => {
+    setIngredients((pre) => {
+      const newIngredients = [...pre];
+      newIngredients[index].quantity = e.target.value;
+      return newIngredients;
+    });
+  };
+  const handleAddIngredient = () => {
+    setIngredients((pre) => {
+      pre[pre.length - 1] && (pre[pre.length - 1].confirm = true);
+      return [...pre, { name: "", quantity: 1, confirm: false }];
+    });
+  };
+
   return (
     <div className="edit-product w-full px-5 pr-20 overflow-x-hidden flex flex-col">
       <div className="flex p-2">
@@ -56,7 +91,7 @@ function EditProduct() {
                     className="py-1 bg-white rounded-full border border-slate-300 px-5 caret-pink"
                     type="text"
                     id="name"
-                    name="name"
+                    name="product-name"
                     required
                   />
                 </div>
@@ -75,44 +110,93 @@ function EditProduct() {
                 </div>
               </div>
               <div className="w-1/2 px-4">
-                <div className="flex flex-col pl-3">
+                <div className="relative flex flex-col pl-3">
                   <label className="my-1 px-5" htmlFor="ingredients">
                     Thành phần
                   </label>
                   <div
-                    className="w-full h-60 flex flex-col items-center justify-start"
+                    className="w-full h-80 overflow-x-auto flex flex-col items-center justify-start"
                     id="ingredients"
                   >
                     {ingredients.map((ingredient, index) => (
                       <div
+                        data-index={index}
                         key={index}
-                        className="w-full flex items-center justify-around"
+                        className="w-full flex items-center justify-around py-1"
                       >
-                        <input
-                          value={ingredient.name}
-                          autoComplete="off"
-                          className="w-[70%] py-1 rounded-full bg-white border border-slate-300 px-4 caret-pink"
-                          type="text"
-                          name="ingredients"
-                          required
-                        />
+                        {ingredient.confirm ? (
+                          <div className="cursor-default w-[70%] py-1 rounded-full bg-white border border-slate-300 px-4 caret-pink">
+                            {ingredient.name}
+                          </div>
+                        ) : (
+                          <TextInputWithSuggests
+                            ignore={ingredients.map((e) => e.name)}
+                            updateValue={updateIngredients}
+                            name="ingredients-name"
+                            autoFocus={true}
+                            className={
+                              " w-[70%] py-1 rounded-full bg-white border border-slate-300 px-4 caret-pink"
+                            }
+                          />
+                        )}
                         <input
                           onChange={(e) => {
-                            const newIngredients = [...ingredients];
-                            newIngredients[index].quantity = e.target.value;
-                            setIngredients(newIngredients);
+                            handleChangeQuantity(index)(e);
                           }}
-                          min={0}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              handleAddIngredient();
+                            }
+                          }}
+                          min={1}
                           value={ingredient.quantity}
                           autoComplete="off"
-                          className="w-[20%] py-1 rounded-full bg-white border border-slate-300 pl-4 pr-2 caret-pink"
+                          className="w-[20%] py-1 rounded-full bg-white border border-slate-300 pl-[4%] pr-[2%] caret-pink"
                           type="number"
-                          name="ingredients"
+                          name="ingredients-quantity"
                           required
                         />
+                        {ingredient.confirm ? (
+                          <Close
+                            onClick={() => {
+                              setIngredients((pre) => {
+                                const newIngredients = [...pre];
+                                newIngredients.splice(index, 1);
+                                return newIngredients;
+                              });
+                            }}
+                            fontSize="small"
+                            className="cursor-pointer"
+                          />
+                        ) : (
+                          <Check
+                            onClick={() => {
+                              if (
+                                document.querySelector(
+                                  `input[name="ingredients-name"]`
+                                ).value === ""
+                              ) {
+                                setIngredients((pre) => {
+                                  const newIngredients = [...pre];
+                                  newIngredients.splice(index, 1);
+                                  return newIngredients;
+                                });
+                              } else {
+                                setIngredients((pre) => {
+                                  const newIngredients = [...pre];
+                                  newIngredients[index].confirm = true;
+                                  return newIngredients;
+                                });
+                              }
+                            }}
+                            fontSize="small"
+                            className="cursor-pointer"
+                          />
+                        )}
                       </div>
                     ))}
                     <button
+                      onClick={handleAddIngredient}
                       type="button"
                       className="border-[2px] border-dashed w-[92%] py-[2px] mt-3 mx-auto rounded-xl border-pink "
                     >
@@ -125,7 +209,7 @@ function EditProduct() {
           </div>
           <div className="w-[30%] bg-slate-200 my-4 px-4 pb-6 pt-3 flex flex-col">
             <h3 className="w-full text-xl mb-3">Hình ảnh</h3>
-            <InputImages />
+            <InputImages updateImages={updateImages} />
           </div>
         </div>
       </form>
