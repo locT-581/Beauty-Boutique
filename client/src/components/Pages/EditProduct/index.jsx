@@ -1,27 +1,92 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CircleLoadingSpin from "../../../UI/Icon/CircleLoadingSpin";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import SplitButton from "../../../UI/SliptButton";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import InputImages from "../../../UI/InputImages";
 import AddIcon from "@mui/icons-material/Add";
 import TextInputWithSuggests from "../../../UI/TextInputWithSuggests";
 import { useEffect, useRef, useState } from "react";
 import Close from "@mui/icons-material/Close";
-import CheckIcon from "@mui/icons-material/Check";
 import Check from "@mui/icons-material/Check";
+import axios from "axios";
+import { updateProductAsync } from "../../../redux/reducers/productSlice";
+import { deleteAllImagesInFolder, uploadImage } from "../../../utils/storage";
+import { ref } from "firebase/storage";
+import { storage } from "../../../config/firebaseConfig";
 
 const options = ["Lưu và đăng tải", "Lưu ở chế độ riêng tư", "Hủy bỏ"];
 
 function EditProduct() {
+  const { id } = useParams();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading } = useSelector((state) => state.productSlice);
+  const lastForm = useRef({
+    name: "",
+    description: "",
+    ingredients: [],
+    imageUrls: [],
+    avatar: "",
+    displayMode: "",
+    price: "",
+    stock: "",
+    voucher: [],
+    category: "",
+  });
+  const { loading, currentProduct } = useSelector(
+    (state) => state.productSlice
+  );
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    ingredients: [],
+    imageUrls: [],
+    avatar: "",
+    displayMode: "",
+    price: "",
+    stock: "",
+    voucher: [],
+    category: "",
+  });
+  useEffect(() => {
+    getDisplayMode();
+  }, []);
+  useEffect(() => {
+    if (currentProduct) {
+      setForm((pre) => {
+        const newForm = {
+          ...pre,
+          name: currentProduct.name,
+          description: currentProduct.description,
+          ingredients: currentProduct.ingredients,
+          imageUrls: currentProduct.imageUrls,
+          avatar: currentProduct.avatar,
+          displayMode: currentProduct.displayMode,
+          price: currentProduct.price,
+          stock: currentProduct.stock,
+          voucher: currentProduct.voucher,
+          category: currentProduct.category,
+        };
+        lastForm.current = newForm;
+        return newForm;
+      });
+      setIngredients(currentProduct.ingredients);
+      setImages(currentProduct.imageUrls);
+    }
+  }, [currentProduct]);
 
   const [images, setImages] = useState([]);
   const updateImages = (newImages) => {
     setImages(newImages);
   };
+  useEffect(() => {
+    if (!images) return;
+    setForm((pre) => {
+      lastForm.current = pre;
+      return { ...pre, imageUrls: images, avatar: images[0] };
+    });
+  }, [images]);
 
   const [ingredients, setIngredients] = useState([]);
   const updateIngredients = (newIngredientsName, confirm = false) => {
@@ -34,6 +99,30 @@ function EditProduct() {
       return newIngredients;
     });
   };
+
+  const [modes, setModes] = useState([]);
+  const getDisplayMode = async () => {
+    try {
+      const { data } = await axios.get("/api/v1/product/get-display-mode", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      setModes(data.displayMode);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (JSON.stringify(form) === JSON.stringify(lastForm.current)) return;
+    if (form.name === "") return;
+    const timeout = setTimeout(() => {
+      console.log(JSON.stringify(form), JSON.stringify(lastForm.current));
+      dispatch(updateProductAsync({ id, ...form }));
+    }, 5000);
+    return () => clearTimeout(timeout);
+  }, [form]);
 
   const handleAdd = (selectedIndex) => {
     if (selectedIndex === 0) {
@@ -56,8 +145,15 @@ function EditProduct() {
     });
   };
 
+  const handleChangeForm = (e) => {
+    setForm((pre) => {
+      lastForm.current = pre;
+      return { ...pre, [e.target.name]: e.target.value };
+    });
+  };
+
   return (
-    <div className="edit-product w-full px-5 pr-20 overflow-x-hidden flex flex-col">
+    <div className="edit-product w-full px-5 pr-20 -mt-8 overflow-x-hidden flex flex-col">
       <div className="flex p-2">
         <div className="flex w-[70%]">
           <button
@@ -68,8 +164,20 @@ function EditProduct() {
           >
             <ArrowBackIosIcon />
           </button>
-          <div className="ml-4 text-2xl flex items-center">
-            Chi tiết sản phẩm
+          <div className="flex">
+            <h2 className="ml-4 text-2xl flex items-center">
+              Chi tiết sản phẩm
+            </h2>
+            <span className="flex items-center text-sm text-slate-400 mx-5">
+              {loading ? (
+                <div className="flex">
+                  <CircleLoadingSpin width="25" color="black" />
+                  <span className="ml-2">Đang lưu...</span>
+                </div>
+              ) : (
+                "Đã lưu"
+              )}
+            </span>
           </div>
         </div>
         <div className="w-[30%] flex justify-end">
@@ -84,24 +192,31 @@ function EditProduct() {
               <div className="w-1/2 flex flex-col">
                 <div className="flex flex-col">
                   <label className=" my-1" htmlFor="name">
-                    Tên sản phẩm
+                    <span className="text-pink">*</span>Tên sản phẩm
                   </label>
                   <input
+                    onFocus={(e) => {
+                      e.target.select();
+                    }}
+                    onChange={handleChangeForm}
+                    value={form.name}
                     autoComplete="off"
                     className="py-1 bg-white rounded-full border border-slate-300 px-5 caret-pink"
                     type="text"
                     id="name"
-                    name="product-name"
+                    name="name"
                     required
                   />
                 </div>
                 <div className="flex flex-col pt-6">
                   <label className=" my-1" htmlFor="description">
-                    Mô tả
+                    <span className="text-pink">*</span>Mô tả
                   </label>
                   <textarea
+                    value={form.description}
+                    onChange={handleChangeForm}
                     autoComplete="off"
-                    className="p-2 h-60 max-h-56 bg-white rounded-lg border border-slate-300 px-4 caret-pink "
+                    className="p-2 h-48 max-h-48 bg-white rounded-lg border border-slate-300 px-4 caret-pink "
                     type="text"
                     id="description"
                     name="description"
@@ -112,13 +227,13 @@ function EditProduct() {
               <div className="w-1/2 px-4">
                 <div className="relative flex flex-col pl-3">
                   <label className="my-1 px-5" htmlFor="ingredients">
-                    Thành phần
+                    <span className="text-pink">*</span>Thành phần
                   </label>
                   <div
-                    className="w-full h-80 overflow-x-auto flex flex-col items-center justify-start"
+                    className="w-full h-72 overflow-x-auto flex flex-col items-center justify-start"
                     id="ingredients"
                   >
-                    {ingredients.map((ingredient, index) => (
+                    {ingredients?.map((ingredient, index) => (
                       <div
                         data-index={index}
                         key={index}
@@ -147,6 +262,9 @@ function EditProduct() {
                             if (e.key === "Enter") {
                               handleAddIngredient();
                             }
+                          }}
+                          onFocus={(e) => {
+                            e.target.select();
                           }}
                           min={1}
                           value={ingredient.quantity}
@@ -207,9 +325,98 @@ function EditProduct() {
               </div>
             </div>
           </div>
-          <div className="w-[30%] bg-slate-200 my-4 px-4 pb-6 pt-3 flex flex-col">
+          <div className="w-[30%] bg-slate-200 my-4 px-4 pt-3 flex flex-col">
             <h3 className="w-full text-xl mb-3">Hình ảnh</h3>
             <InputImages updateImages={updateImages} />
+          </div>
+        </div>
+        <div className="flex w-full justify-between">
+          <div className="w-3/5 flex ">
+            <div className="w-1/2 flex flex-col px-3">
+              <div className="flex flex-col ">
+                <label className="my-1 px-2" htmlFor="display">
+                  <span className="text-pink">*</span>Hiển thị
+                </label>
+                <select
+                  className="py-1 bg-white rounded-full border border-slate-300 px-5 outline-none caret-pink "
+                  name="displayMode"
+                  id="display"
+                >
+                  {modes.map((mode) => (
+                    <option key={mode.id} value={mode.id}>
+                      {mode.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col my-1">
+                <label className="my-1 px-2" htmlFor="price">
+                  <span className="text-pink">*</span>Giá bán
+                </label>
+                <input
+                  onChange={handleChangeForm}
+                  value={form.price}
+                  autoComplete="off"
+                  className="py-1 bg-white rounded-full border border-slate-300 px-5 caret-pink"
+                  type="text"
+                  id="price"
+                  name="price"
+                  required
+                />
+              </div>
+              <div className="flex flex-col my-1">
+                <label className="my-1 px-2" htmlFor="stock">
+                  <span className="text-pink">*</span>Kho
+                </label>
+                <input
+                  onChange={handleChangeForm}
+                  value={form.stock}
+                  autoComplete="off"
+                  className="py-1 bg-white rounded-full border border-slate-300 px-5 caret-pink"
+                  type="number"
+                  id="stock"
+                  name="stock"
+                  required
+                />
+              </div>
+            </div>
+            <div className="w-1/2 px-3">
+              <div className="flex flex-col ">
+                <label className="my-1 px-2" htmlFor="voucher">
+                  Voucher
+                </label>
+                <select
+                  className="py-1 bg-white rounded-full border border-slate-300 px-5 outline-none caret-pink "
+                  name="voucher"
+                  id="voucher"
+                >
+                  {modes.map((mode) => (
+                    <option key={mode.id} value={mode.id}>
+                      {mode.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div className="w-[30%] bg-slate-200 my-4 px-4 pt-3 flex flex-col">
+            <h3 className="w-full text-xl mb-3">Phân loại</h3>
+            <div className="flex flex-col ">
+              <label className="my-1 px-2" htmlFor="display">
+                <span className="text-pink">*</span>Phân loại sản phẩm
+              </label>
+              <select
+                className="py-1 bg-white rounded-full border border-slate-300 px-5 outline-none caret-pink "
+                name="display"
+                id="display"
+              >
+                {modes.map((mode) => (
+                  <option key={mode.id} value={mode.id}>
+                    {mode.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </form>

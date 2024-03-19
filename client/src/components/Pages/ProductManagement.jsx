@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import EnhancedTable from "../../UI/EnhancedTable";
 import { useDispatch, useSelector } from "react-redux";
-import { addEmptyProductAsync } from "../../redux/reducers/productSlice";
+import {
+  addEmptyProductAsync,
+  clearCurrentProduct,
+  getProductByIdAsync,
+} from "../../redux/reducers/productSlice";
 import { useNavigate } from "react-router-dom";
 
 function ProductManagement({ title }) {
@@ -9,6 +13,10 @@ function ProductManagement({ title }) {
   const dispatch = useDispatch();
   const [moveToEdit, setMoveToEdit] = useState(false);
   const { currentProduct } = useSelector((state) => state.productSlice);
+  useEffect(() => {
+    dispatch(clearCurrentProduct());
+  }, []);
+
   useEffect(() => {
     if (currentProduct.id && moveToEdit) {
       navigate(`/chinhsuasanpham/${currentProduct.id}`);
@@ -22,6 +30,7 @@ function ProductManagement({ title }) {
     setMoveToEdit(true);
   };
   const handleEdit = (id) => {
+    dispatch(getProductByIdAsync(id));
     navigate(`/chinhsuasanpham/${id}`);
   };
   return (

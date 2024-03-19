@@ -6,10 +6,10 @@ import Lottie from "react-lottie";
 import { Backdrop } from "@mui/material";
 
 function AdminLayout({ children }) {
-  const { loading } = useSelector((state) => state.productSlice);
+  const { loading, isUpdating } = useSelector((state) => state.productSlice);
   return (
     <>
-      {loading && (
+      {loading && !isUpdating && (
         <Backdrop
           transitionDuration={{ appear: 100, enter: 0, exit: 300 }}
           sx={{

@@ -86,13 +86,12 @@ function EditPost() {
 
     images.forEach(async (i, index) => {
       if (i.src.includes("base64")) {
-        console.log(i.src.includes("base64"));
         tasks.push(
           new Promise((resolve, reject) => {
             fetch(i.src)
               .then((res) => res.blob())
               .then((blob) => {
-                uploadImage(blob, id, index)
+                uploadImage("blogs_image", blob, id, index)
                   .then((url) => {
                     result = result.replace(i.src, url);
                     resolve();

@@ -46,6 +46,9 @@ import {
   getAllBlog,
   updateBlog,
 } from "../../redux/reducers/blogSlice";
+import { deleteAllImagesInFolder } from "../../utils/storage";
+import { ref } from "firebase/storage";
+import { storage } from "../../config/firebaseConfig";
 
 function descendingComparator(a, b, orderBy) {
   const first = a[orderBy];
@@ -452,6 +455,7 @@ export default function EnhancedTable({ handleAddNew, handleEdit }) {
   const quickDeleteAProduct = (id) => {
     if (pathname === "/quanlysanpham") {
       dispatch(deleteProductAsync(id));
+      deleteAllImagesInFolder(ref(storage, `products_image/${id}`));
     } else if (pathname === "/quanlybaiviet") {
       dispatch(deleteBlog(id));
     }

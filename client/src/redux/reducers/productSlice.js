@@ -30,6 +30,15 @@ export const getProductsAsync = createAsyncThunk(
   }
 );
 
+// Get product by id
+export const getProductByIdAsync = createAsyncThunk(
+  "product/getProductById",
+  async (id) => {
+    const data = await productAPI.getProductById(id);
+    return data;
+  }
+);
+
 // Delete product
 export const deleteProductAsync = createAsyncThunk(
   "product/deleteProduct",
@@ -62,6 +71,7 @@ const productSlice = createSlice({
   initialState: {
     products: [],
     currentProduct: {},
+    isUpdating: false,
     loading: false,
     error: "",
     message: "",
@@ -74,12 +84,16 @@ const productSlice = createSlice({
     clearMessage: (state) => {
       state.message = "";
     },
+    clearCurrentProduct: (state) => {
+      state.currentProduct = {};
+    },
   },
 
   extraReducers: (builder) => {
     builder
       .addCase(getAllProductAsync.pending, (state) => {
         state.loading = true;
+        state.isUpdating = false;
       })
       .addCase(getAllProductAsync.fulfilled, (state, action) => {
         state.loading = false;
@@ -92,10 +106,13 @@ const productSlice = createSlice({
       })
       .addCase(updateProductAsync.pending, (state) => {
         state.loading = true;
+        state.isUpdating = true;
       })
       .addCase(updateProductAsync.fulfilled, (state, action) => {
         state.loading = false;
         state.error = "";
+        state.isUpdating = false;
+        state.currentProduct = action.payload.product;
         state.message = action.payload.message;
       })
       .addCase(updateProductAsync.rejected, (state, action) => {
@@ -151,10 +168,22 @@ const productSlice = createSlice({
       .addCase(addEmptyProductAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+      .addCase(getProductByIdAsync.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getProductByIdAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentProduct = action.payload.product;
+        state.error = "";
+      })
+      .addCase(getProductByIdAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 });
 
 const { actions, reducer } = productSlice;
-export const { clearError, clearMessage } = actions;
+export const { clearError, clearMessage, clearCurrentProduct } = actions;
 export default reducer;

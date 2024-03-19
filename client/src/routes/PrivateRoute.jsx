@@ -5,7 +5,6 @@ const PrivateRoute = ({ children }) => {
   const { loading, isAuthenticated, user } = useSelector(
     (state) => state.authSlice
   );
-
   return (
     <>
       {loading === false &&

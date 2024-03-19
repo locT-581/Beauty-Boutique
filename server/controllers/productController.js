@@ -224,6 +224,7 @@ export const updateProduct = catchAsync(async (req, res, next) => {
     stock,
     avatar,
     displayMode,
+    voucher,
   } = req.body;
 
   const updatedProduct = {
@@ -236,7 +237,9 @@ export const updateProduct = catchAsync(async (req, res, next) => {
     stock,
     avatar,
     displayMode,
+    voucher,
   };
+  console.log(updatedProduct);
   // Just update the fields that are not empty
   for (let key in updatedProduct) {
     if (!updatedProduct[key] && updatedProduct[key] !== 0) {
@@ -259,6 +262,7 @@ export const updateProduct = catchAsync(async (req, res, next) => {
       res.status(200).json({
         success: true,
         message: "Cập nhật thành công!",
+        product: { id: productId, ...product.data(), ...updatedProduct },
       });
     })
     .catch((error) => {

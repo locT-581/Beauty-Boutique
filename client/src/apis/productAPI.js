@@ -108,10 +108,26 @@ const addEmptyProduct = async (product = {}) => {
   }
 };
 
+// Get product by id
+export const getProductById = async (id) => {
+  try {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const { data } = await axios.get(`/api/v1/product/get/${id}`, config);
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
+
 const productAPI = {
   addEmptyProduct,
-  getAllProduct,
   getProducts,
+  getAllProduct,
+  getProductById,
   updateProduct,
   deleteProduct,
   deleteManyProducts,

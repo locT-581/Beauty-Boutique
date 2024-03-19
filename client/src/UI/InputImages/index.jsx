@@ -1,25 +1,59 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import Logo from "../Icon/Logo";
 import Lottie from "react-lottie";
 import here from "../../assets/SVG/hereicon.json";
 import CloseIcon from "@mui/icons-material/Close";
+import { useSelector } from "react-redux";
+import { storage } from "../../config/firebaseConfig";
+import { deleteObject, ref } from "firebase/storage";
+import { uploadImage } from "../../utils/storage";
 
 function InputImages({ updateImages }) {
+  const { currentProduct } = useSelector((state) => state.productSlice);
   const [images, setImages] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
+  useEffect(() => {
+    if (currentProduct.imageUrls !== undefined) {
+      setImages(currentProduct.imageUrls);
+    }
+  }, [currentProduct]);
+  useEffect(() => {
+    console.log(images);
+  }, [images]);
+
   const handleOnChange = (e) => {
     const files = e.target.files;
+    if (!files.length) return;
     const imgs = Array.from(files);
-    setActiveIndex(() => {
-      setImages((pre) => [...pre, ...imgs]);
-      return images.length + imgs.length - 1;
+    // get time to create unique name
+    const time = new Date().getTime();
+    // 1. upload images to firebase storage
+    imgs.forEach(async (img) => {
+      await uploadImage(
+        "products_image",
+        img,
+        currentProduct.id,
+        time.toString()
+      )
+        // 2. get download url
+        .then((url) => {
+          // 3. update images state
+          setImages((pre) => {
+            // 4. update currentProduct.imageUrls
+            updateImages([...pre, url]);
+            setActiveIndex([...pre, url].length - 1);
+            return [...pre, url];
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     });
   };
 
   useEffect(() => {
-    updateImages(images);
     if (activeIndex === images.length - 1) {
       // Scroll to the end of the list
       const container = document.querySelector(".slick-image");
@@ -28,7 +62,7 @@ function InputImages({ updateImages }) {
         behavior: "smooth",
       });
     }
-  }, [images.length, activeIndex, updateImages]);
+  }, [images, activeIndex]);
 
   const handleClick = (e, index) => {
     setActiveIndex(index);
@@ -50,22 +84,38 @@ function InputImages({ updateImages }) {
     });
   };
 
-  const handleRemoveImage = (index) => {
+  const handleRemoveImage = (e, index) => {
+    const src = e.target.previousSibling.src;
     setImages((pre) => {
       setActiveIndex(Math.max(index - 1, 0));
-      return pre.filter((_, i) => i !== index);
+      // remove element equal src in images array
+      const newImages = pre.filter((image) => {
+        return image !== src;
+      });
+      console.log(newImages);
+      updateImages(newImages);
+      return newImages;
     });
+    // remove image in firebase storage
+    deleteObject(ref(storage, src))
+      .then(() => {
+        console.log("File deleted successfully");
+      })
+      .catch((error) => {
+        // Uh-oh, an error occurred!
+        console.log("Uh-oh, an error occurred! ", error);
+      });
   };
 
   return (
     <div>
       <div>
         <span className="w-[90%] text-pink text-sm text-end block -mt-2 mx-auto">
-          {images.length}
+          {`${activeIndex + (images.length > 0 ? 1 : 0)}/${images.length}`}
         </span>
         {images[activeIndex] && images.length ? (
           <img
-            src={URL.createObjectURL(images[activeIndex])}
+            src={images[activeIndex]}
             alt="preview"
             className="mx-auto w-[90%] object-cover aspect-square"
           />
@@ -111,7 +161,7 @@ function InputImages({ updateImages }) {
             }
           >
             <img
-              src={URL.createObjectURL(image)}
+              src={image}
               alt="Xem trước"
               className="w-full object-cover aspect-square rounded-lg"
               onClick={(e) => {
@@ -119,8 +169,8 @@ function InputImages({ updateImages }) {
               }}
             />
             <CloseIcon
-              onClick={() => {
-                handleRemoveImage(index);
+              onClick={(e) => {
+                handleRemoveImage(e, index);
               }}
               fontSize="small"
               className="absolute -top-1 -right-1 bg-pink text-white rounded-full p-1 cursor-pointer"
@@ -145,4 +195,4 @@ function InputImages({ updateImages }) {
   );
 }
 
-export default InputImages;
+export default memo(InputImages);
