@@ -12,9 +12,10 @@ import Close from "@mui/icons-material/Close";
 import Check from "@mui/icons-material/Check";
 import axios from "axios";
 import { updateProductAsync } from "../../../redux/reducers/productSlice";
-import { deleteAllImagesInFolder, uploadImage } from "../../../utils/storage";
-import { ref } from "firebase/storage";
-import { storage } from "../../../config/firebaseConfig";
+import { uploadImage } from "../../../utils/storage";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../../config/firebaseConfig";
+import { FormControl, Select } from "@mui/material";
 
 const options = ["Lưu và đăng tải", "Lưu ở chế độ riêng tư", "Hủy bỏ"];
 
@@ -29,10 +30,11 @@ function EditProduct() {
     imageUrls: [],
     avatar: "",
     displayMode: "",
-    price: "",
-    stock: "",
+    price: 0,
+    stock: 0,
     voucher: [],
     category: "",
+    colors: [],
   });
   const { loading, currentProduct } = useSelector(
     (state) => state.productSlice
@@ -44,14 +46,18 @@ function EditProduct() {
     imageUrls: [],
     avatar: "",
     displayMode: "",
-    price: "",
-    stock: "",
+    price: 0,
+    stock: 0,
     voucher: [],
     category: "",
+    colors: [],
   });
   useEffect(() => {
     getDisplayMode();
+    getCategories();
+    getColors();
   }, []);
+
   useEffect(() => {
     if (currentProduct) {
       setForm((pre) => {
@@ -67,6 +73,7 @@ function EditProduct() {
           stock: currentProduct.stock,
           voucher: currentProduct.voucher,
           category: currentProduct.category,
+          colors: currentProduct.colors,
         };
         lastForm.current = newForm;
         return newForm;
@@ -92,13 +99,25 @@ function EditProduct() {
   const updateIngredients = (newIngredientsName, confirm = false) => {
     setIngredients((pre) => {
       const newIngredients = [...pre];
-      newIngredients[newIngredients.length - 1].name = newIngredientsName;
+      // newIngredients[newIngredients.length - 1].name = newIngredientsName.name;
+      newIngredients[newIngredients.length - 1] = {
+        ...newIngredients[newIngredients.length - 1],
+        ...newIngredientsName,
+      };
       if (confirm) {
         newIngredients[newIngredients.length - 1].confirm = true;
       }
       return newIngredients;
     });
   };
+  useEffect(() => {
+    if (!ingredients) return;
+    console.log(ingredients);
+    setForm((pre) => {
+      lastForm.current = pre;
+      return { ...pre, ingredients };
+    });
+  }, [ingredients]);
 
   const [modes, setModes] = useState([]);
   const getDisplayMode = async () => {
@@ -113,12 +132,79 @@ function EditProduct() {
       console.log(error);
     }
   };
+  const [categories, setCategories] = useState([]);
+  /*
+  [{
+    id: UAsaaoowh23878403,
+    name: "Chủ đề",
+    sub: [
+      {
+        id: "IoaLs28acu703",
+        name: "Khai trương",
+      },
+      {
+        id: "aloJUnsjccca",
+        name: "Tình yêu",
+      },
+      {
+        id: "IoaLs90Nhasc03",
+        name: "Chúc mừng",
+      }
+    ]
+  }]
+  */
+  const getCategories = async () => {
+    const mainCollectionName = "categories";
+    const subCollectionName = ["categories-topic", "categories-object"];
+    const data = [];
+    try {
+      const mainCollectionRef = collection(db, mainCollectionName);
+      const mainQuerySnapshot = await getDocs(mainCollectionRef);
+
+      const promises = mainQuerySnapshot.docs.map(async (mainDoc, index) => {
+        const mainData = { id: mainDoc.id, ...mainDoc.data(), sub: [] };
+        data.push(mainData);
+
+        const subCollectionRef = collection(
+          mainDoc.ref,
+          subCollectionName[index]
+        );
+        const subQuerySnapshot = await getDocs(subCollectionRef);
+
+        subQuerySnapshot.forEach((subDoc) => {
+          mainData.sub.push({ id: subDoc.id, ...subDoc.data() });
+        });
+      });
+
+      await Promise.all(promises).then(() => {
+        console.log(data);
+        setCategories(data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const [colors, setColors] = useState([]);
+  const getColors = async () => {
+    try {
+      // Get color from firestore
+      const colorRef = collection(db, "colors");
+      getDocs(colorRef).then((querySnapshot) => {
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          data.push({ id: doc.id, ...doc.data() });
+        });
+        setColors(data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     if (JSON.stringify(form) === JSON.stringify(lastForm.current)) return;
     if (form.name === "") return;
     const timeout = setTimeout(() => {
-      console.log(JSON.stringify(form), JSON.stringify(lastForm.current));
       dispatch(updateProductAsync({ id, ...form }));
     }, 5000);
     return () => clearTimeout(timeout);
@@ -126,6 +212,7 @@ function EditProduct() {
 
   const handleAdd = (selectedIndex) => {
     if (selectedIndex === 0) {
+      dispatch(updateProductAsync({ id, displayMode: "public", ...form }));
     } else if (selectedIndex === 1) {
     } else if (selectedIndex === 2) {
     }
@@ -140,20 +227,78 @@ function EditProduct() {
   };
   const handleAddIngredient = () => {
     setIngredients((pre) => {
-      pre[pre.length - 1] && (pre[pre.length - 1].confirm = true);
-      return [...pre, { name: "", quantity: 1, confirm: false }];
+      const newIngredients = [...pre];
+      newIngredients[newIngredients.length - 1] = {
+        ...newIngredients[newIngredients.length - 1],
+        confirm: true,
+      };
+      return [...newIngredients, { name: "", quantity: 1, confirm: false }];
     });
   };
-
   const handleChangeForm = (e) => {
+    if (e.target.name === "price") {
+      // Check if the input is not a number
+      if (isNaN(e.target.value)) {
+        return;
+      }
+      // Check if the input is a number
+      if (e.target.value === "") {
+        setForm((pre) => {
+          lastForm.current = pre;
+          return { ...pre, [e.target.name]: 0 };
+        });
+      } else {
+        setForm((pre) => {
+          lastForm.current = pre;
+          return { ...pre, [e.target.name]: Number(e.target.value) };
+        });
+      }
+    }
     setForm((pre) => {
       lastForm.current = pre;
       return { ...pre, [e.target.name]: e.target.value };
     });
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const promises = [];
+      images.forEach((image) => {
+        promises.push(uploadImage(image));
+      });
+      const result = await Promise.all(promises);
+      const imageUrls = result.map((item) => item.downloadURL);
+      setForm((pre) => {
+        lastForm.current = pre;
+        return { ...pre, imageUrls, avatar: imageUrls[0] };
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleChangeColor = (e) => {
+    // Check if the color is checked then add to form.colors else remove from form.colors
+    if (e.target.checked) {
+      setForm((pre) => {
+        lastForm.current = pre;
+        // Check if the color is already in form.colors
+        return pre.colors.includes(e.target.id)
+          ? pre
+          : { ...pre, colors: [...pre.colors, e.target.id] };
+      });
+    } else {
+      setForm((pre) => {
+        lastForm.current = pre;
+        return {
+          ...pre,
+          colors: pre.colors.filter((color) => color !== e.target.id),
+        };
+      });
+    }
+  };
 
   return (
-    <div className="edit-product w-full px-5 pr-20 -mt-8 overflow-x-hidden flex flex-col">
+    <div className="edit-product w-full px-5 pr-20 overflow-x-hidden flex flex-col">
       <div className="flex p-2">
         <div className="flex w-[70%]">
           <button
@@ -184,7 +329,7 @@ function EditProduct() {
           <SplitButton handleClick={handleAdd} options={options} />
         </div>
       </div>
-      <form className="w-full px-2 flex flex-col">
+      <form onSubmit={handleSubmit} className="w-full px-2 pb-14 flex flex-col">
         <div className="flex w-full justify-between">
           <div className="w-3/5 bg-slate-200 my-4 px-4 pb-6 pt-3 flex flex-col">
             <h3 className="w-full text-xl mb-3">Thông tin chung</h3>
@@ -326,7 +471,7 @@ function EditProduct() {
             </div>
           </div>
           <div className="w-[30%] bg-slate-200 my-4 px-4 pt-3 flex flex-col">
-            <h3 className="w-full text-xl mb-3">Hình ảnh</h3>
+            <h3 className="w-full text-xl mb-1">Hình ảnh</h3>
             <InputImages updateImages={updateImages} />
           </div>
         </div>
@@ -397,23 +542,59 @@ function EditProduct() {
                   ))}
                 </select>
               </div>
+              <div className="flex flex-col my-1">
+                <div className="my-1 px-2">
+                  <span className="text-pink">*</span>Màu sắc
+                </div>
+                <div className="w-full flex flex-wrap ">
+                  {colors.map((color, i) => (
+                    <div key={i} className="w-1/2 flex items-center my-1">
+                      <input
+                        className="cursor-pointer"
+                        onChange={handleChangeColor}
+                        type="checkbox"
+                        id={color.id}
+                        name="colors"
+                        value={color.id}
+                        checked={form.colors.includes(color.id)}
+                      />
+
+                      <label
+                        className="ml-1 cursor-pointer"
+                        htmlFor={color.id}
+                        style={{ color: color.code }}
+                      >
+                        {color.name}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
           <div className="w-[30%] bg-slate-200 my-4 px-4 pt-3 flex flex-col">
             <h3 className="w-full text-xl mb-3">Phân loại</h3>
             <div className="flex flex-col ">
-              <label className="my-1 px-2" htmlFor="display">
+              <label className="my-1 px-2" htmlFor="categories">
                 <span className="text-pink">*</span>Phân loại sản phẩm
               </label>
               <select
-                className="py-1 bg-white rounded-full border border-slate-300 px-5 outline-none caret-pink "
-                name="display"
-                id="display"
+                className="py-1 bg-white rounded-full border border-slate-300 px-5 outline-none"
+                name="categories"
+                id="categories"
               >
-                {modes.map((mode) => (
-                  <option key={mode.id} value={mode.id}>
-                    {mode.name}
-                  </option>
+                {categories.map((category) => (
+                  <optgroup
+                    className="text-lg"
+                    key={category.id}
+                    label={category.name}
+                  >
+                    {category.sub.map((sub) => (
+                      <option key={sub.id} value={sub.id}>
+                        {sub.name}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </div>

@@ -7,10 +7,14 @@ const ProductManagement = lazy(() =>
 const BlogManagement = lazy(() =>
   import("../components/Pages/BlogManagement.jsx")
 );
+const ListAllProducts = lazy(() =>
+  import("../components/Pages/ListAllProducts")
+);
 const EditPost = lazy(() => import("../components/Pages/EditPost.jsx"));
 const EditProduct = lazy(() => import("../components/Pages/EditProduct"));
 const publicRouter = [
   { path: "/trangchu", element: Home, layout: null },
+  { path: "/tat-ca-san-pham", element: ListAllProducts, layout: null },
   { path: "*", element: () => <div>Page not found</div>, layout: null },
 ];
 

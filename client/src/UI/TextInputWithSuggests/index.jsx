@@ -9,7 +9,7 @@ function TextInputWithSuggests({
   ignore = [],
   ...rest
 }) {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(""); // Value of input
   const [cursor, setCursor] = useState(0); // Cursor to select value use for keyboard
   const cursorRef = useRef(0); // Cursor in ref to use in useEffect
   const [suggestList, setSuggestList] = useState([]);
@@ -34,7 +34,7 @@ function TextInputWithSuggests({
   }, [suggestList]);
 
   const submit = (i) => {
-    updateValue(suggestListRef.current[i].name, true);
+    updateValue(suggestListRef.current[i], true);
     setValue(suggestListRef.current[i].name);
     setSuggestList([]);
     document

@@ -19,9 +19,6 @@ function InputImages({ updateImages }) {
       setImages(currentProduct.imageUrls);
     }
   }, [currentProduct]);
-  useEffect(() => {
-    console.log(images);
-  }, [images]);
 
   const handleOnChange = (e) => {
     const files = e.target.files;
@@ -92,7 +89,6 @@ function InputImages({ updateImages }) {
       const newImages = pre.filter((image) => {
         return image !== src;
       });
-      console.log(newImages);
       updateImages(newImages);
       return newImages;
     });

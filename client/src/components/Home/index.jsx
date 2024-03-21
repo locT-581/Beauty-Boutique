@@ -10,9 +10,9 @@ import Header from "../Header";
 import "./styles.css";
 import Footer from "../Footer";
 import ProductCarousel from "../ProductCarousel";
+import { Link } from "react-router-dom";
 
 function Home() {
-
   return (
     <main className="overflow-x-hidden">
       <div id="banner-home" className="w-[100vw] h-[100vh]">
@@ -28,9 +28,11 @@ function Home() {
               <br /> Giao hoa tươi mỗi ngày và trong vòng một giờ.
             </p>
 
-            <Button className={"px-12 py-2 ml-[15%] mt-8  "} color="white">
-              Mua ngay!
-            </Button>
+            <Link to="/tat-ca-san-pham">
+              <Button className={"px-12 py-2 ml-[15%] mt-8  "} color="white">
+                Mua ngay!
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

@@ -31,7 +31,7 @@ function AdminLayout({ children }) {
       )}
       <div className="w-full flex h-[100vh]">
         <SideBarAdmin />
-        <div className="w-10/12 pl-5 pt-16 absolute right-0">{children}</div>
+        <div className="w-10/12 pl-5 pt-4 absolute right-0">{children}</div>
       </div>
     </>
   );

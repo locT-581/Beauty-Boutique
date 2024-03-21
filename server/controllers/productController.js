@@ -23,6 +23,7 @@ export const addProduct = catchAsync(async (req, res, next) => {
     stock,
     avatar,
     displayMode,
+    colors,
   } = req.body;
   const db = getFirestore();
   const productCollection = db.collection("products");
@@ -45,6 +46,7 @@ export const addProduct = catchAsync(async (req, res, next) => {
     displayMode: displayMode || "public",
     soldQuantity: 0,
     timestamp: FieldValue.serverTimestamp(),
+    colors: [],
   };
 
   // Add product into Database
@@ -225,6 +227,7 @@ export const updateProduct = catchAsync(async (req, res, next) => {
     avatar,
     displayMode,
     voucher,
+    colors,
   } = req.body;
 
   const updatedProduct = {
@@ -238,6 +241,7 @@ export const updateProduct = catchAsync(async (req, res, next) => {
     avatar,
     displayMode,
     voucher,
+    colors,
   };
   console.log(updatedProduct);
   // Just update the fields that are not empty

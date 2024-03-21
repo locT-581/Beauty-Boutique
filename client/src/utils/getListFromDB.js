@@ -9,9 +9,9 @@ const getListFromDB = async (collectionName, query = { search: "" }) => {
   querySnapshot.forEach((doc) => {
     if (search) {
       if (doc.data().name.toLowerCase().includes(search.toLowerCase())) {
-        list.push(doc.data());
+        list.push({ id: doc.id, ...doc.data() });
       }
-    } else list.push(doc.data());
+    } else list.push({ id: doc.id, ...doc.data() });
   });
   return list;
 };
