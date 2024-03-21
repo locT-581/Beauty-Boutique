@@ -25,14 +25,13 @@ function InputImages({ updateImages }) {
     if (!files.length) return;
     const imgs = Array.from(files);
     // get time to create unique name
-    const time = new Date().getTime();
     // 1. upload images to firebase storage
     imgs.forEach(async (img) => {
       await uploadImage(
         "products_image",
         img,
         currentProduct.id,
-        time.toString()
+        new Date().getTime().toString()
       )
         // 2. get download url
         .then((url) => {
@@ -98,7 +97,6 @@ function InputImages({ updateImages }) {
         console.log("File deleted successfully");
       })
       .catch((error) => {
-        // Uh-oh, an error occurred!
         console.log("Uh-oh, an error occurred! ", error);
       });
   };

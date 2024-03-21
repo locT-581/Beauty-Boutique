@@ -20,7 +20,7 @@ import UnAuthenticated from "./Submenu/NotAuthenticated";
 import { closeBackDrop } from "../../redux/reducers/uiSlice";
 import AdminMenu from "./Submenu/AdminMenu";
 
-function Header() {
+function Header({ className = "", ...rest }) {
   const dispatch = useDispatch();
   const { element } = useSelector((state) => state.uiSlice);
   const { isAuthenticated, error, message, user } = useSelector(
@@ -48,7 +48,12 @@ function Header() {
   return (
     <>
       <BBackdrop>{element}</BBackdrop>
-      <header className="w-full flex justify-between items-center text-white px-[10%] py-[1%]">
+      <header
+        className={
+          "w-full flex justify-between items-center text-white px-[10%] py-[1%] " +
+          className
+        }
+      >
         <div className="pr-[1%] w-2/12">
           <Logo width="140" />
         </div>

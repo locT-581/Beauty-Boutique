@@ -12,6 +12,7 @@ export const theme = {
     colors: {
       pink: "#EE9EA4",
       "soft-pink": "#FFCFD2",
+      yellow: "#F2CB05",
     },
     fontWeight: {
       normal: "400",

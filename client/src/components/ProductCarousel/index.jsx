@@ -4,7 +4,7 @@ import "slick-carousel/slick/slick-theme.css";
 import ProductCard from "../ProductCard";
 
 import "./styles.css";
-function ProductCarousel() {
+function ProductCarousel({ products = [] }) {
   const settings = {
     dots: true,
     infinite: true,
@@ -16,59 +16,16 @@ function ProductCarousel() {
   };
   return (
     <Slider {...settings}>
-      <ProductCard
-        className={"w-[200px]"}
-        title={"Đại Phú Quý"}
-        price={"4,460,000"}
-        image={
-          "https://8384f55340.vws.vegacdn.vn/image/cache/catalog/products/August%202023/hoa-khai-truong-dai-phu-quy.jpg.webp"
-        }
-      />
-
-      <ProductCard
-        className={"w-[200px]"}
-        title={"Đại Phú Quý"}
-        price={"4,460,000"}
-        image={
-          "https://8384f55340.vws.vegacdn.vn/image/cache/catalog/products/August%202023/hoa-khai-truong-dai-phu-quy.jpg.webp"
-        }
-      />
-
-      <ProductCard
-        className={"w-[200px]"}
-        title={"Đại Phú Quý"}
-        price={"4,460,000"}
-        image={
-          "https://8384f55340.vws.vegacdn.vn/image/cache/catalog/products/August%202023/hoa-khai-truong-dai-phu-quy.jpg.webp"
-        }
-      />
-
-      <ProductCard
-        className={"w-[200px]"}
-        title={"Thượng Phú Quý"}
-        price={"4,460,000"}
-        image={
-          "https://8384f55340.vws.vegacdn.vn/image/cache/catalog/products/August%202023/hoa-khai-truong-dai-phu-quy.jpg.webp"
-        }
-      />
-
-      <ProductCard
-        className={"w-[200px]"}
-        title={"Trung Phú Quý"}
-        price={"4,460,000"}
-        image={
-          "https://8384f55340.vws.vegacdn.vn/image/cache/catalog/products/August%202023/hoa-khai-truong-dai-phu-quy.jpg.webp"
-        }
-      />
-
-      <ProductCard
-        className={"w-[200px]"}
-        title={"Tiểu Phú Quý"}
-        price={"4,460,000"}
-        image={
-          "https://8384f55340.vws.vegacdn.vn/image/cache/catalog/products/August%202023/hoa-khai-truong-dai-phu-quy.jpg.webp"
-        }
-      />
+      {products.map((product) => (
+        <ProductCard
+          id={product.id}
+          key={product.id}
+          className={"w-[200px]"}
+          title={product.name}
+          price={product.price}
+          image={product.avatar || product.imageUrls[0]}
+        />
+      ))}
     </Slider>
   );
 }

@@ -11,11 +11,13 @@ import { useEffect, useRef, useState } from "react";
 import Close from "@mui/icons-material/Close";
 import Check from "@mui/icons-material/Check";
 import axios from "axios";
-import { updateProductAsync } from "../../../redux/reducers/productSlice";
+import {
+  deleteProductAsync,
+  updateProductAsync,
+} from "../../../redux/reducers/productSlice";
 import { uploadImage } from "../../../utils/storage";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../config/firebaseConfig";
-import { FormControl, Select } from "@mui/material";
 
 const options = ["Lưu và đăng tải", "Lưu ở chế độ riêng tư", "Hủy bỏ"];
 
@@ -202,6 +204,7 @@ function EditProduct() {
   };
 
   useEffect(() => {
+    console.log(form);
     if (JSON.stringify(form) === JSON.stringify(lastForm.current)) return;
     if (form.name === "") return;
     const timeout = setTimeout(() => {
@@ -214,7 +217,10 @@ function EditProduct() {
     if (selectedIndex === 0) {
       dispatch(updateProductAsync({ id, displayMode: "public", ...form }));
     } else if (selectedIndex === 1) {
+      dispatch(updateProductAsync({ id, displayMode: "private", ...form }));
     } else if (selectedIndex === 2) {
+      navigate(-1);
+      dispatch(deleteProductAsync(id));
     }
   };
 
@@ -254,6 +260,7 @@ function EditProduct() {
         });
       }
     }
+    console.log(e.target.value, e.target.name);
     setForm((pre) => {
       lastForm.current = pre;
       return { ...pre, [e.target.name]: e.target.value };
@@ -483,12 +490,17 @@ function EditProduct() {
                   <span className="text-pink">*</span>Hiển thị
                 </label>
                 <select
+                  onChange={handleChangeForm}
                   className="py-1 bg-white rounded-full border border-slate-300 px-5 outline-none caret-pink "
                   name="displayMode"
                   id="display"
                 >
                   {modes.map((mode) => (
-                    <option key={mode.id} value={mode.id}>
+                    <option
+                      selected={mode.id === form.displayMode}
+                      key={mode.id}
+                      value={mode.id}
+                    >
                       {mode.name}
                     </option>
                   ))}
@@ -556,7 +568,9 @@ function EditProduct() {
                         id={color.id}
                         name="colors"
                         value={color.id}
-                        checked={form.colors.includes(color.id)}
+                        checked={
+                          form.colors ? form.colors.includes(color.id) : false
+                        }
                       />
 
                       <label
@@ -575,13 +589,14 @@ function EditProduct() {
           <div className="w-[30%] bg-slate-200 my-4 px-4 pt-3 flex flex-col">
             <h3 className="w-full text-xl mb-3">Phân loại</h3>
             <div className="flex flex-col ">
-              <label className="my-1 px-2" htmlFor="categories">
+              <label className="my-1 px-2" htmlFor="category">
                 <span className="text-pink">*</span>Phân loại sản phẩm
               </label>
               <select
+                onChange={handleChangeForm}
                 className="py-1 bg-white rounded-full border border-slate-300 px-5 outline-none"
-                name="categories"
-                id="categories"
+                name="category"
+                id="category"
               >
                 {categories.map((category) => (
                   <optgroup
@@ -590,7 +605,11 @@ function EditProduct() {
                     label={category.name}
                   >
                     {category.sub.map((sub) => (
-                      <option key={sub.id} value={sub.id}>
+                      <option
+                        selected={sub.id === form.category}
+                        key={sub.id}
+                        value={sub.id}
+                      >
                         {sub.name}
                       </option>
                     ))}

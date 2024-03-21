@@ -515,7 +515,6 @@ export default function EnhancedTable({ handleAddNew, handleEdit }) {
                 const isItemSelected = isSelected(row.id);
                 const labelId = `enhanced-table-checkbox-${index}`;
                 // Change timestamp to date
-
                 const date = new Date(row.thirdCol * 1000);
                 const formattedDate = `${date.getDate()}/${
                   date.getMonth() + 1

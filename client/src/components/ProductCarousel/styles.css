@@ -6,3 +6,7 @@
 .slick-dots {
   bottom: -10px !important;
 }
+.slick-slide {
+  display: flex !important;
+  justify-content: center !important;
+}
