@@ -38,6 +38,7 @@ export const signupUser = catchAsync(async (req, res, next) => {
   getAuth()
     .createUser(newUser)
     .then((userRecord) => {
+      const { password, ...newUser } = newUser;
       const userDB = {
         uid: userRecord.uid,
         timestamp: FieldValue.serverTimestamp(),
@@ -263,9 +264,10 @@ export const getAccountDetails = catchAsync(async (req, res, next) => {
       if (doc.empty) {
         return next(new ErrorHandler("User Not Found", 404));
       }
+      const { password, ...user } = doc.data();
       res.status(200).json({
         success: true,
-        user: doc.data(),
+        user,
       });
     })
     .catch((error) => {

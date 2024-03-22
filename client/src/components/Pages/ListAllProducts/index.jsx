@@ -90,6 +90,7 @@ function ListAllProducts() {
 
   return (
     <>
+      <CatagoriesNav className=" mt-4 " />
       <div className="bg-pink flex px-[10%] mt-14">
         <div className="flex items-center justify-center">
           <img

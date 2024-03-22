@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import Logo from "../../UI/Icon/Logo";
 import PersonIcon from "@mui/icons-material/Person";
 import SearchIcon from "@mui/icons-material/Search";
-import LocalMallIcon from "@mui/icons-material/LocalMall";
 
 import TriggerTooltip from "../../UI/TriggersTooltip";
 import { useEffect } from "react";
@@ -19,8 +18,9 @@ import Authenticated from "./Submenu/Authenticated";
 import UnAuthenticated from "./Submenu/NotAuthenticated";
 import { closeBackDrop } from "../../redux/reducers/uiSlice";
 import AdminMenu from "./Submenu/AdminMenu";
+import Cart from "../Cart";
 
-function Header({ className = "", ...rest }) {
+function Header({ className = " ", ...rest }) {
   const dispatch = useDispatch();
   const { element } = useSelector((state) => state.uiSlice);
   const { isAuthenticated, error, message, user } = useSelector(
@@ -93,7 +93,9 @@ function Header({ className = "", ...rest }) {
           >
             <PersonIcon className="ml-3 cursor-pointer hover:scale-105" />
           </TriggerTooltip>
-          <LocalMallIcon className="ml-3 cursor-pointer hover:scale-105" />
+          <span>
+            <Cart />
+          </span>
         </div>
       </header>
     </>

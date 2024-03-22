@@ -39,3 +39,24 @@ export const Flower = {
   description: "",
   imageUrls: [],
 };
+
+export const Bill = {
+  id: "",
+  uid: "aVuRI2TJ9KOGvVAM7G5wsRa06z42",
+  shippingInfo: {
+    fullName: "",
+    phoneNumber: "",
+    address: "",
+    city: "",
+    time,
+  },
+  products: [{ name: "07UlQN4X5xlNWo6WZjbX", quantity: 2 }],
+  total: "674000",
+  createAt: "",
+  status: "awaiting-fulfillment",
+  paymentStatus: "wait-payment",
+  paymentMethod: "cod",
+  note: "",
+  message: "",
+  voucher: "",
+};

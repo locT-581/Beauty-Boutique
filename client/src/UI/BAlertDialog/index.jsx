@@ -11,6 +11,7 @@ export default function BAlertDialog({
   title,
   content,
   children,
+  visible = true,
 }) {
   const [open, setOpen] = React.useState(false);
 
@@ -24,7 +25,12 @@ export default function BAlertDialog({
 
   return (
     <React.Fragment>
-      <Button onClick={handleClickOpen}>{children}</Button>
+      <Button
+        sx={{ visibility: visible ? "visible" : "hidden" }}
+        onClick={handleClickOpen}
+      >
+        {children}
+      </Button>
       <Dialog
         open={open}
         onClose={handleClose}

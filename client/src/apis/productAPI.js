@@ -123,6 +123,61 @@ export const getProductById = async (id) => {
   }
 };
 
+// Add product to cart
+export const addProductToCart = async (productId) => {
+  try {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const { data } = await axios.post(
+      `/api/v1/product/add-to-cart/${productId}`,
+      config
+    );
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
+
+// Get all products in cart
+export const getAllProductsFromCart = async () => {
+  try {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const { data } = await axios.get(
+      "/api/v1/product/get-product-from-cart",
+      config
+    );
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
+
+// Remove product from cart
+export const removeProductFromCart = async (productIds) => {
+  try {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const { data } = await axios.post(
+      `/api/v1/product/remove-from-cart`,
+      { productIds },
+      config
+    );
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
+
 const productAPI = {
   addEmptyProduct,
   getProducts,
@@ -131,6 +186,9 @@ const productAPI = {
   updateProduct,
   deleteProduct,
   deleteManyProducts,
+  addProductToCart,
+  getAllProductsFromCart,
+  removeProductFromCart,
 };
 
 export default productAPI;

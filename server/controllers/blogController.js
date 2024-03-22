@@ -1,11 +1,7 @@
 import dotenv from "dotenv";
 
-import { getAuth } from "firebase-admin/auth";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
 
-import { authClient } from "../config/firebaseConfig.js";
-
-import sendCookie from "../utils/sendCookie.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import catchAsync from "../middlewares/catchAsync.js";
 

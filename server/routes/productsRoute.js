@@ -17,16 +17,19 @@ router.get("/get-display-mode", productController.getDisplayMode);
 // delete many products
 router.post("/delete-many", productController.deleteManyProducts);
 
-// router
-//   .route("/me")
-//   .get(isAuthenticated, productController.getAccountDetails)
-//   .delete(isAuthenticated, productController.deleteProfile);
-
-// // put request -> update something
-// router.put("/update/password", isAuthenticated, productController.updatePassword);
-// router.put("/update/profile", isAuthenticated, productController.updateProfile);
-
-// router.route("/password/forgot").post(productController.forgotPassword);
-// router.route("/password/reset/:token").put(productController.resetPassword);
+// add product to cart
+router.post("/add-to-cart/:id", isAuthenticated, productController.addToCart);
+// get all products in cart
+router.get(
+  "/get-product-from-cart",
+  isAuthenticated,
+  productController.getAllProductsFromCart
+);
+// remove product from cart
+router.post(
+  "/remove-from-cart",
+  isAuthenticated,
+  productController.removeFromCart
+);
 
 export default router;

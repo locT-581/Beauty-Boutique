@@ -66,10 +66,38 @@ export const addEmptyProductAsync = createAsyncThunk(
   }
 );
 
+// Add product to cart
+export const addProductToCartAsync = createAsyncThunk(
+  "product/addProductToCart",
+  async (productId) => {
+    const data = await productAPI.addProductToCart(productId);
+    return data;
+  }
+);
+
+// Remove product from cart
+export const removeProductsFromCartAsync = createAsyncThunk(
+  "product/removeProductFromCart",
+  async (productIds) => {
+    const data = await productAPI.removeProductFromCart(productIds);
+    return data;
+  }
+);
+
+// Get all products from cart
+export const getProductsFromCartAsync = createAsyncThunk(
+  "product/getProductsFromCart",
+  async () => {
+    const data = await productAPI.getAllProductsFromCart();
+    return data;
+  }
+);
+
 const productSlice = createSlice({
   name: "product",
   initialState: {
     products: [],
+    productFromCart: [],
     currentProduct: {},
     isUpdating: false,
     loading: false,
@@ -178,6 +206,42 @@ const productSlice = createSlice({
         state.error = "";
       })
       .addCase(getProductByIdAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(addProductToCartAsync.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(addProductToCartAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+        state.error = "";
+      })
+      .addCase(addProductToCartAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(getProductsFromCartAsync.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getProductsFromCartAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.productFromCart = action.payload.products;
+        state.error = "";
+      })
+      .addCase(getProductsFromCartAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(removeProductsFromCartAsync.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(removeProductsFromCartAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+        state.error = "";
+      })
+      .addCase(removeProductsFromCartAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

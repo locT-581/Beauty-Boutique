@@ -37,7 +37,7 @@ const isAuthenticated = catchAsync(async (req, res, next) => {
     })
     .catch((error) => {
       console.log("Error when verify token: ", error);
-      return next(new ErrorHandler("Please Login to Access, " + error, 401));
+      return next(new ErrorHandler("Vui lòng đăng nhập "));
     });
 });
 export default isAuthenticated;

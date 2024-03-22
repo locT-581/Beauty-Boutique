@@ -14,6 +14,7 @@ const ListAllProducts = lazy(() =>
 const EditPost = lazy(() => import("../components/Pages/EditPost.jsx"));
 const EditProduct = lazy(() => import("../components/Pages/EditProduct"));
 const DetailProduct = lazy(() => import("../components/DetailProduct"));
+const Payment = lazy(() => import("../components/Payment"));
 
 const publicRouter = [
   { path: "/trangchu", element: Home, layout: null },
@@ -23,6 +24,8 @@ const publicRouter = [
     element: DetailProduct,
     layout: DefaultLayout,
   },
+  { path: "/thanh-toan", element: Payment, layout: DefaultLayout },
+
   { path: "*", element: () => <div>Page not found</div>, layout: null },
 ];
 
