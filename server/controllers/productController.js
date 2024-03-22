@@ -361,32 +361,6 @@ export const removeFromCart = catchAsync(async (req, res, next) => {
     });
 });
 
-// const product = await productCollection.doc(productId).get();
-// if (product.empty) {
-//   return next(new ErrorHandler("Không tìm thấy sản phẩm", 404));
-// }
-
-// if (!user) {
-//   return next(new ErrorHandler("Vui lòng đăng nhập", 401));
-// }
-
-// const cartRef = db.collection("users").doc(user.uid).collection("cart");
-
-// cartRef
-//   .doc(productId)
-//   .delete()
-//   .then(() => {
-//     console.log("Remove product from cart successfully");
-//     res.status(200).json({
-//       success: true,
-//       message: "Đã xóa sản phẩm khỏi giỏ hàng",
-//     });
-//   })
-//   .catch((error) => {
-//     console.log("Error when remove product from cart:", error);
-//     return res.status(400).json(error);
-//   });
-
 // Get all products from cart
 export const getAllProductsFromCart = catchAsync(async (req, res, next) => {
   const db = getFirestore();
@@ -411,40 +385,48 @@ export const getAllProductsFromCart = catchAsync(async (req, res, next) => {
 });
 
 // Update product in cart
-// export const updateProductInCart = catchAsync(async (req, res, next) => {
-//   const productId = req.params.id;
-//   const db = getFirestore();
-//   const productCollection = db.collection("products");
+export const updateProductInCart = catchAsync(async (req, res, next) => {
+  const productId = req.params.id;
+  const { quantity } = req.body;
+  console.log(quantity);
+  const { user } = req;
+  const db = getFirestore();
+  const productCollection = db.collection("products");
 
-//   const product = await productCollection.doc(productId).get();
-//   if (product.empty) {
-//     return next(new ErrorHandler("Không tìm thấy sản phẩm", 404));
-//   }
-
-//   const user = getAuth(authClient);
-//   if (!user) {
-//     return next(new ErrorHandler("Vui lòng đăng nhập ", 401));
-//   }
-
-//   const { uid } = user;
-//   const cartRef = db.collection("users").doc(uid).collection("cart");
-
-//   const productData = product.data();
-//   cartRef
-//     .doc(productId)
-//     .set(productData)
-//     .then(() => {
-//       console.log("Update product in cart successfully");
-//       res.status(200).json({
-//         success: true,
-//         message: "Đã cập nhật",
-//       });
-//     })
-//     .catch((error) => {
-//       console.log("Error when update product in cart:", error);
-//       return res.status(400).json(error);
-//     });
-// });
+  const product = await productCollection.doc(productId).get();
+  if (product.empty) {
+    return next(new ErrorHandler("Không tìm thấy sản phẩm", 404));
+  }
+  if (!user) {
+    return next(new ErrorHandler("Vui lòng đăng nhập ", 401));
+  }
+  const { uid } = user;
+  const cartRef = db.collection("users").doc(uid).collection("cart");
+  cartRef
+    .doc(productId)
+    .get()
+    .then((doc) => {
+      if (doc.empty) {
+        return next(
+          new ErrorHandler("Không tìm thấy sản phẩm trong giỏ hàng", 404)
+        );
+      }
+      cartRef
+        .doc(productId)
+        .update({ quantity })
+        .then(() => {
+          console.log("Update product in cart successfully");
+          res.status(200).json({
+            success: true,
+            message: "Đã cập nhật",
+          });
+        })
+        .catch((error) => {
+          console.log("Error when update product in cart:", error);
+          return res.status(400).json(error);
+        });
+    });
+});
 
 // Get display mode
 export const getDisplayMode = catchAsync(async (req, res, next) => {

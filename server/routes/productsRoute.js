@@ -32,4 +32,11 @@ router.post(
   productController.removeFromCart
 );
 
+// update product in cart
+router.put(
+  "/update-product-in-cart/:id",
+  isAuthenticated,
+  productController.updateProductInCart
+);
+
 export default router;

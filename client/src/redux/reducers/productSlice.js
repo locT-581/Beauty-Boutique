@@ -93,6 +93,15 @@ export const getProductsFromCartAsync = createAsyncThunk(
   }
 );
 
+// Update product in cart
+export const updateProductInCartAsync = createAsyncThunk(
+  "product/updateProductInCart",
+  async ({ id, quantity }) => {
+    const data = await productAPI.updateProductInCart(id, quantity);
+    return data;
+  }
+);
+
 const productSlice = createSlice({
   name: "product",
   initialState: {
@@ -216,10 +225,12 @@ const productSlice = createSlice({
         state.loading = false;
         state.message = action.payload.message;
         state.error = "";
+        state.isUpdating = true;
       })
       .addCase(addProductToCartAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+        state.isUpdating = false;
       })
       .addCase(getProductsFromCartAsync.pending, (state) => {
         state.loading = true;
@@ -228,6 +239,7 @@ const productSlice = createSlice({
         state.loading = false;
         state.productFromCart = action.payload.products;
         state.error = "";
+        state.isUpdating = false;
       })
       .addCase(getProductsFromCartAsync.rejected, (state, action) => {
         state.loading = false;
@@ -240,9 +252,25 @@ const productSlice = createSlice({
         state.loading = false;
         state.message = action.payload.message;
         state.error = "";
+        state.isUpdating = true;
       })
       .addCase(removeProductsFromCartAsync.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.error.message;
+        state.isUpdating = false;
+      })
+      .addCase(updateProductInCartAsync.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateProductInCartAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+        state.error = "";
+        state.isUpdating = true;
+      })
+      .addCase(updateProductInCartAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.isUpdating = false;
         state.error = action.error.message;
       });
   },

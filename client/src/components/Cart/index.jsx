@@ -19,14 +19,18 @@ import toastConfig from "../../config/toastConfig";
 import {
   getProductsFromCartAsync,
   removeProductsFromCartAsync,
+  updateProductInCartAsync,
 } from "../../redux/reducers/productSlice";
 import BAlertDialog from "../../UI/BAlertDialog";
 import Lottie from "react-lottie";
 import emptyCart from "../../assets/SVG/emptyCart.json";
 import Button from "../../UI/Button";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 function Cart() {
-  const { productFromCart } = useSelector((state) => state.productSlice);
+  const { productFromCart, isUpdating } = useSelector(
+    (state) => state.productSlice
+  );
   const { user } = useSelector((state) => state.authSlice);
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
@@ -38,6 +42,12 @@ function Cart() {
   useEffect(() => {
     dispatch(getProductsFromCartAsync());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (isUpdating) {
+      dispatch(getProductsFromCartAsync());
+    }
+  }, [isUpdating, dispatch]);
 
   useEffect(() => {
     setProductList(productFromCart);
@@ -63,6 +73,7 @@ function Cart() {
       setSelected((prev) => prev.filter((item) => item !== e.target.value));
     }
   };
+
   useEffect(() => {
     // Count total by id in selected
     let tempTotal = 0;
@@ -76,8 +87,8 @@ function Cart() {
     setQuantitySelected(tempQuantity);
   }, [selected]);
 
-  const handleDelete = (id) => {
-    console.log(id);
+  const handleQuickDelete = (id) => {
+    dispatch(removeProductsFromCartAsync([id]));
   };
 
   const handleDeleteSelected = () => {
@@ -92,13 +103,24 @@ function Cart() {
     }
   };
 
+  const handleDecrement = (id) => {
+    const product = productList.find((product) => product.product.id === id);
+    if (product.quantity === 1) return;
+    dispatch(updateProductInCartAsync({ id, quantity: product.quantity - 1 }));
+  };
+
+  const handleIncrement = (id) => {
+    const product = productList.find((product) => product.product.id === id);
+    dispatch(updateProductInCartAsync({ id, quantity: product.quantity + 1 }));
+  };
+
   return (
     <div>
       <button type="button" onClick={toggleDrawer(true)}>
         <LocalMallIcon className="ml-3 cursor-pointer hover:scale-105" />
       </button>
       <Drawer anchor="right" open={open} onClose={toggleDrawer(false)}>
-        <div className="sm:w-[40vw] w-[100vw] h-[100vh]">
+        <div className="sm:w-[45vw] w-[100vw] h-[100vh]">
           <div className="sticky top-0 bg-white z-10 pb-2 shadow-[0_10px_5px_rgba(255,255,255,1)]">
             <hr className="border-t-8 border-t-soft-pink" />
             <h3 className=" text-center font-fontItalianno text-4xl mt-5">
@@ -127,7 +149,7 @@ function Cart() {
                   <TableHead sx={{ position: "sticky", top: 0 }}>
                     <TableRow>
                       <TableCell align="center">
-                        <div className="flex justify-around">
+                        <div className="flex ">
                           <div className="flex items-center">
                             <Checkbox
                               checked={selected.length === productList.length}
@@ -138,7 +160,6 @@ function Cart() {
                                   color: "#FFCFD2",
                                 },
                               }}
-                              // className="cursor-pointer form-checkbox text-soft-pink h-4 w-4"
                             />
                           </div>
                           <BAlertDialog
@@ -146,9 +167,11 @@ function Cart() {
                             title="Xác nhận xóa các mục đã chọn!"
                             handleSubmit={handleDeleteSelected}
                           >
-                            <div className="text-pink">Xóa</div>
+                            <div className="text-pink mx-2">Xóa</div>
                           </BAlertDialog>
-                          <p className="font-semibold">Sản phẩm</p>
+                          <p className="font-semibold flex items-center">
+                            Sản phẩm
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell align="right">
@@ -189,7 +212,7 @@ function Cart() {
                               onChange={handleCheck}
                             />
                             <img
-                              className="mx-2 min:w-[20px] w-[25%] object-cover aspect-square"
+                              className="mx-2 min:w-[40px] w-[25%] max:w-[50px] object-cover aspect-square"
                               alt="avatar"
                               src={product.product.avatar}
                             />
@@ -202,7 +225,34 @@ function Cart() {
                             currency: "VND",
                           }).format(product.product.price)}
                         </TableCell>
-                        <TableCell align="right">{product.quantity}</TableCell>
+                        <TableCell align="right">
+                          <div className="flex items-center">
+                            <button
+                              onClick={() => {
+                                handleIncrement(product.product.id);
+                              }}
+                              type="button"
+                              className="text-lg -mb-[3px] mr-1 text-gray-600"
+                            >
+                              +
+                            </button>
+                            <span className="text-base mx-1">
+                              {product.quantity}
+                            </span>
+                            <button
+                              onClick={() => {
+                                handleDecrement(product.product.id);
+                              }}
+                              type="button"
+                              className="text-lg text-gray-600"
+                            >
+                              <RemoveIcon
+                                fontSize="10px"
+                                className="w-[10px]"
+                              />
+                            </button>
+                          </div>
+                        </TableCell>
                         <TableCell align="right">
                           {new Intl.NumberFormat("vi-VN", {
                             style: "currency",
@@ -216,7 +266,7 @@ function Cart() {
                         <TableCell align="right">
                           <button
                             onClick={() => {
-                              handleDelete(product.product.id);
+                              handleQuickDelete(product.product.id);
                             }}
                             type="button"
                             className="text-pink cursor-pointer select-none"
@@ -231,7 +281,7 @@ function Cart() {
               </TableContainer>
             </div>
           )}
-          <div className="bg-white fixed bottom-0 sm:w-[40vw] w-[100vw] h-[12vh]">
+          <div className="bg-white fixed bottom-0 sm:w-[45vw] w-[100vw] h-[12vh]">
             <hr className="border-t-2 border-soft-pink " />
             <div className="flex justify-between px-[5%] items-end mt-4 pb-4 text-sm">
               <div className="pb-1">

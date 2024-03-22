@@ -178,6 +178,25 @@ export const removeProductFromCart = async (productIds) => {
   }
 };
 
+// Update product in cart
+export const updateProductInCart = async (productId, quantity) => {
+  try {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const { data } = await axios.put(
+      `/api/v1/product/update-product-in-cart/${productId}`,
+      { quantity },
+      config
+    );
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
+
 const productAPI = {
   addEmptyProduct,
   getProducts,
@@ -189,6 +208,7 @@ const productAPI = {
   addProductToCart,
   getAllProductsFromCart,
   removeProductFromCart,
+  updateProductInCart,
 };
 
 export default productAPI;
