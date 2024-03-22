@@ -11,6 +11,8 @@ function Button({
   } else if (color === "white") {
     className =
       "hover:bg-black hover:text-white bg-white text-black " + className;
+  } else if (color === "pink") {
+    className = "hover:bg-yellow bg-pink text-white " + className;
   }
   return (
     <button className={"cursor-pointer " + className} type={type} {...rest}>

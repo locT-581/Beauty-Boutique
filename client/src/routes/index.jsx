@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import AdminLayout from "../components/Layouts/AdminLayout.jsx";
+import DefaultLayout from "../components/Layouts/DefaultLayout.jsx";
 const Home = lazy(() => import("../components/Home/index.jsx"));
 const ProductManagement = lazy(() =>
   import("../components/Pages/ProductManagement.jsx")
@@ -12,9 +13,16 @@ const ListAllProducts = lazy(() =>
 );
 const EditPost = lazy(() => import("../components/Pages/EditPost.jsx"));
 const EditProduct = lazy(() => import("../components/Pages/EditProduct"));
+const DetailProduct = lazy(() => import("../components/DetailProduct"));
+
 const publicRouter = [
   { path: "/trangchu", element: Home, layout: null },
-  { path: "/tat-ca-san-pham", element: ListAllProducts, layout: null },
+  { path: "/tat-ca-san-pham", element: ListAllProducts, layout: DefaultLayout },
+  {
+    path: "/chi-tiet-san-pham/:id",
+    element: DetailProduct,
+    layout: DefaultLayout,
+  },
   { path: "*", element: () => <div>Page not found</div>, layout: null },
 ];
 

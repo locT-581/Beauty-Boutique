@@ -5,7 +5,7 @@ function CatagoriesNav({ className = "", ...rest }) {
   return (
     <nav
       className={
-        "w-full flex justify-center text-base uppercase font-medium my-4 " +
+        "w-full flex flex-col items-center justify-center text-base uppercase font-medium my-4 " +
         className
       }
       {...rest}

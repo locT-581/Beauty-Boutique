@@ -17,7 +17,6 @@ import {
 } from "firebase/firestore";
 import { db } from "../../../config/firebaseConfig";
 function ListAllProducts() {
-  const { products } = useSelector((state) => state.productSlice);
   const [newestProducts, setNewestProducts] = useState([]);
   const [birthProducts, setBirthProducts] = useState([]);
   const [congratulationProducts, setCongratulationProducts] = useState([]);
@@ -91,8 +90,6 @@ function ListAllProducts() {
 
   return (
     <>
-      <Header className="bg-pink py-6" />
-      <CatagoriesNav className=" mt-4 " />
       <div className="bg-pink flex px-[10%] mt-14">
         <div className="flex items-center justify-center">
           <img
@@ -190,8 +187,6 @@ function ListAllProducts() {
         </div>
       </div>
       <hr className="w-[85%] mx-auto " />
-
-      <Footer />
     </>
   );
 }

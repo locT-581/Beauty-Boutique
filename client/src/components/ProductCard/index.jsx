@@ -1,15 +1,22 @@
 import { Skeleton } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { getProductByIdAsync } from "../../redux/reducers/productSlice";
 
 function ProductCard({ title, price, image, className, id, ...rest }) {
   const [imgLoaded, setImgLoaded] = useState(false);
+  const dispatch = useDispatch();
   const handleOnLoad = () => {
     setImgLoaded(true);
   };
 
+  const handleOnclick = () => {
+    dispatch(getProductByIdAsync(id));
+  };
+
   return (
-    <Link to={"/chi-tiet-san-pham/" + id}>
+    <Link onClick={handleOnclick} to={"/chi-tiet-san-pham/" + id}>
       <div
         className={
           "pb-8 cursor-pointer flex flex-col justify-center items-center " +
