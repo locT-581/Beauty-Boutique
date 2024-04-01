@@ -1,4 +1,4 @@
-import { Fragment, Suspense, useEffect } from "react";
+import { Fragment, Suspense, useEffect, useState } from "react";
 import Logo from "./UI/Icon/LogoSpin";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -6,9 +6,24 @@ import "react-toastify/dist/ReactToastify.css";
 import { privateRouter, publicRouter } from "./routes";
 import { Route, Routes, useLocation } from "react-router-dom";
 import PrivateRoute from "./routes/PrivateRoute";
+import { socket } from "./socket";
+import { useSelector } from "react-redux";
 
 function App() {
+  const { user } = useSelector((state) => state.authSlice);
   const { pathname } = useLocation();
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Connected to server");
+      socket.emit("join", { userId: user.uid });
+    });
+
+    return () => {
+      socket.off("connect");
+    };
+  }, []);
+
   // always scroll to top on route/path change
   useEffect(() => {
     window.scrollTo({

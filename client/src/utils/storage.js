@@ -1,12 +1,12 @@
 import {
   deleteObject,
-  getBlob,
   getDownloadURL,
   listAll,
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { storage } from "../config/firebaseConfig";
+import { db, storage } from "../config/firebaseConfig";
+import { collection, getDocs } from "firebase/firestore";
 
 export const uploadImage = async (folderName, file, id, name) => {
   const storageRef = ref(storage, `${folderName}/${id}/${name}`);
@@ -70,4 +70,23 @@ export const deleteAllImagesInFolder = async (folderRef) => {
   } catch (error) {
     console.error("Error deleting files in folder:", error);
   }
+};
+
+export const getPaymentMethod = async () => {
+  const querySnapshot = await getDocs(collection(db, "payment-method"));
+  const tempDocs = [];
+  querySnapshot.forEach((doc) => {
+    console.log(`${doc.id} => ${doc.data()}`);
+    tempDocs.push({ id: doc.id, ...doc.data() });
+  });
+  return tempDocs;
+};
+
+export const getPaymentStatus = async () => {
+  const querySnapshot = await getDocs(collection(db, "payment-status"));
+  const tempDocs = [];
+  querySnapshot.forEach((doc) => {
+    tempDocs.push({ id: doc.id, ...doc.data() });
+  });
+  return tempDocs;
 };

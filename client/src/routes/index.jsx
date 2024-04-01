@@ -14,7 +14,6 @@ const ListAllProducts = lazy(() =>
 const EditPost = lazy(() => import("../components/Pages/EditPost.jsx"));
 const EditProduct = lazy(() => import("../components/Pages/EditProduct"));
 const DetailProduct = lazy(() => import("../components/DetailProduct"));
-const Payment = lazy(() => import("../components/Payment"));
 
 const publicRouter = [
   { path: "/trangchu", element: Home, layout: null },
@@ -24,7 +23,6 @@ const publicRouter = [
     element: DetailProduct,
     layout: DefaultLayout,
   },
-  { path: "/thanh-toan", element: Payment, layout: DefaultLayout },
 
   { path: "*", element: () => <div>Page not found</div>, layout: null },
 ];
@@ -49,10 +47,10 @@ const privateRouter = [
     title: "Quản lý khách hàng",
   },
   {
-    path: "/quanlymagiamgia",
+    path: "/quanlydonhang",
     element: BlogManagement,
     layout: AdminLayout,
-    title: "Quản lý mã giảm giá",
+    title: "Quản lý đơn hàng",
   },
   {
     path: "/quanlythongke",

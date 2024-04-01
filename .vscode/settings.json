@@ -20,5 +20,5 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "commentTranslate.targetLanguage": "vi",
-  "commentTranslate.multiLineMerge": true
+  "commentTranslate.multiLineMerge": false
 }

@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 import fileUpload from "express-fileupload";
 import morgan from "morgan";
 
+import cors from "cors";
+
 // import passport from "passport";
 import errorMiddleware from "./middlewares/error.js";
 import routes from "./routes/index.js";
@@ -15,6 +17,10 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const corsOptions = {
+  origin: "http://localhost:3000",
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -37,22 +43,4 @@ app.set("views", path.join(__dirname, "../client"));
 // error middleware
 app.use(errorMiddleware);
 
-/*  PASSPORT SETUP  */
-/** 
-var userProfile;
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.get("/success", (req, res) => res.send(userProfile));
-app.get("/error", (req, res) => res.send("error logging in"));
-
-passport.serializeUser(function (user, cb) {
-  cb(null, user);
-});
-
-passport.deserializeUser(function (obj, cb) {
-  cb(null, obj);
-});
-*/
 export default app;

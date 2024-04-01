@@ -3,6 +3,7 @@ function Button({
   color = "black",
   type = "button",
   className,
+  disabled = false,
   ...rest
 }) {
   // Check color is black => hover color is pink
@@ -14,8 +15,17 @@ function Button({
   } else if (color === "pink") {
     className = "hover:bg-yellow bg-pink text-white " + className;
   }
+  if (disabled) {
+    className =
+      "cursor-not-allowed bg-gray-400 text-white hover:bg-gray-400" + className;
+  }
   return (
-    <button className={"cursor-pointer " + className} type={type} {...rest}>
+    <button
+      disabled={disabled}
+      className={"cursor-pointer " + className}
+      type={type}
+      {...rest}
+    >
       {children}
     </button>
   );

@@ -68,13 +68,13 @@ function SideBarAdmin() {
                 Khách hàng
               </li>
             </Link>
-            <Link to="/quanlymagiamgia">
+            <Link to="/quanlydonhang">
               <li
-                id="quanlymagiamgia"
+                id="quanlydonhang"
                 className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
               >
                 <ConfirmationNumberOutlinedIcon className="mx-2" />
-                Voucher
+                Đơn hàng
               </li>
             </Link>
             <Link to="/quanlythongke">

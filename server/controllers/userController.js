@@ -38,11 +38,11 @@ export const signupUser = catchAsync(async (req, res, next) => {
   getAuth()
     .createUser(newUser)
     .then((userRecord) => {
-      const { password, ...newUser } = newUser;
+      const { password, ...newUser1 } = newUser;
       const userDB = {
         uid: userRecord.uid,
         timestamp: FieldValue.serverTimestamp(),
-        ...newUser,
+        ...newUser1,
       };
       // Add user into Database
       userCollection
@@ -61,7 +61,7 @@ export const signupUser = catchAsync(async (req, res, next) => {
         });
     })
     .catch((error) => {
-      console.log("Error creating new user:", error.code);
+      console.log("Error creating new user:", error);
       switch (error.code) {
         case "auth/email-already-exists":
           return res.status(400).json({

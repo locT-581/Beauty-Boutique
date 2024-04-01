@@ -197,6 +197,25 @@ export const updateProductInCart = async (productId, quantity) => {
   }
 };
 
+// Create a new orders
+export const createOrder = async ({ order }) => {
+  try {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const { data } = await axios.post(
+      "/api/v1/product/add-order",
+      { order },
+      config
+    );
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
+
 const productAPI = {
   addEmptyProduct,
   getProducts,
