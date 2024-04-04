@@ -275,7 +275,7 @@ function DetailProduct() {
           )}
         </div>
       </section>
-      <section className="best-seller px-[10%] my-20 ">
+      <section className=" best-seller px-[10%] my-20 ">
         <h3 className="text-5xl font-fontItalianno text-center my-6">
           Sản phẩm đề xuất
         </h3>
@@ -288,6 +288,7 @@ function DetailProduct() {
       </section>
     </main>
   );
+  
 }
 
 export default DetailProduct;
