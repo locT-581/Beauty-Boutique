@@ -91,7 +91,7 @@ function SideBarAdmin() {
       </div>
       <div>
         <ul>
-          <Link to="/trangchu">
+          <Link to="/">
             <li className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]">
               <HomeOutlinedIcon className="mx-2" />
               Trang chủ

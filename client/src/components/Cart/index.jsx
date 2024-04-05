@@ -28,7 +28,11 @@ import emptyCart from "../../assets/SVG/emptyCart.json";
 import Button from "../../UI/Button";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { socket } from "../../socket";
-import { getPaymentMethod, getPaymentStatus } from "../../utils/storage";
+import {
+  getPaymentMethod,
+  getPaymentStatus,
+  reduceStock,
+} from "../../utils/storage";
 import { createOrder } from "../../apis/productAPI";
 
 const cities = [
@@ -161,6 +165,25 @@ function Cart() {
   }, [user]);
 
   const handleChange = (e) => {
+    // check if deliveryDate is valid
+    if (e.target.id === "deliveryDate") {
+      const today = new Date();
+      const deliveryDate = new Date(e.target.value);
+      if (deliveryDate < today) {
+        toast.error("Ngày giao hàng không hợp lệ", toastConfig);
+        return;
+      }
+    }
+    // check if deliveryTime is valid
+    if (e.target.id === "deliveryTime") {
+      const deliveryTime = e.target.value;
+      const [hour] = deliveryTime.split(":");
+      if (hour < 6 || hour > 22) {
+        toast.error("Thời gian giao hàng từ 6h đến 22h", toastConfig);
+        return;
+      }
+    }
+
     setUserForm({ ...userForm, [e.target.id]: e.target.value });
   };
 
@@ -186,13 +209,17 @@ function Cart() {
       products: productInPayment,
       total: total,
       paymentStatus: paymentMethod.current === "cash" ? "paid" : "wait-payment",
-      orderStatus: "awaiting-fulfillment",
+      orderStatus: "pending",
     };
     const result = await createOrder({ order });
     if (result) {
       dispatch(removeProductsFromCartAsync(selected));
       setShowPayment(false);
       socket.emit("newOrder", order);
+      // Loop through productInPayment to reduce stock
+      productInPayment.forEach((product) => {
+        reduceStock(product.product.id, product.quantity);
+      });
     }
   };
 
@@ -303,10 +330,10 @@ function Cart() {
                           <span className="text-pink">*</span>Ngày giao hàng
                         </label>
                         <input
+                          required
                           value={userForm.deliveryDate}
                           onChange={handleChange}
                           autoComplete="off"
-                          required
                           name="deliveryDate"
                           type="date"
                           id="deliveryDate"
@@ -320,10 +347,10 @@ function Cart() {
                           <span className="text-pink">*</span>Khoảng thời gian
                         </label>
                         <input
+                          required
                           value={userForm.deliveryTime}
                           onChange={handleChange}
                           autoComplete="off"
-                          required
                           type="time"
                           id="deliveryTime"
                           name="deliveryTime"

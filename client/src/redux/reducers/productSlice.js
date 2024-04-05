@@ -112,6 +112,7 @@ const productSlice = createSlice({
     loading: false,
     error: "",
     message: "",
+    isNewOrder: false,
   },
 
   reducers: {
@@ -123,6 +124,12 @@ const productSlice = createSlice({
     },
     clearCurrentProduct: (state) => {
       state.currentProduct = {};
+    },
+    alertNewOrder: (state) => {
+      state.isNewOrder = true;
+    },
+    clearNewOrder: (state) => {
+      state.isNewOrder = false;
     },
   },
 
@@ -277,5 +284,11 @@ const productSlice = createSlice({
 });
 
 const { actions, reducer } = productSlice;
-export const { clearError, clearMessage, clearCurrentProduct } = actions;
+export const {
+  clearError,
+  clearMessage,
+  clearCurrentProduct,
+  alertNewOrder,
+  clearNewOrder,
+} = actions;
 export default reducer;

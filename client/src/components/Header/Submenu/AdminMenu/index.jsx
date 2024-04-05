@@ -29,6 +29,15 @@ function AdminMenu() {
         </Button>
       </Link>
       <hr />
+      <Link to="/quanlydonhang">
+        <Button
+          color="white"
+          className="w-full hover:bg-soft-pink hover:text-black text-start text-base font-fontCabin px-6 py-2"
+        >
+          Quản lý đơn hàng
+        </Button>
+      </Link>
+      <hr />
       <Button
         onClick={handleLogout}
         color="white"

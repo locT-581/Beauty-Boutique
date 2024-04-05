@@ -7,23 +7,26 @@ import {
   clearMessage,
   getProductByIdAsync,
   getProductsFromCartAsync,
-} from "../../redux/reducers/productSlice";
-import Button from "../../UI/Button";
+} from "../../../redux/reducers/productSlice";
+import Button from "../../../UI/Button";
 import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
-import { db } from "../../config/firebaseConfig";
+import { db } from "../../../config/firebaseConfig";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
-import ProductCarousel from "../ProductCarousel";
+import ProductCarousel from "../../ProductCarousel";
 import { Breadcrumbs, Link, Typography } from "@mui/material";
-import CatagoriesNav from "../Menu/CatagoriesNav";
+import CatagoriesNav from "../../Menu/CatagoriesNav";
 import { toast } from "react-toastify";
-import toastConfig from "../../config/toastConfig";
+import toastConfig from "../../../config/toastConfig";
 import Lottie from "react-lottie";
 
-import addToCartSVG from "../../assets/SVG/addToCart.json";
+import addToCartSVG from "../../../assets/SVG/addToCart.json";
 
-function DetailProduct() {
+
+
+const DetailWiki = () => {
+
   const { id } = useParams();
   const dispatch = useDispatch();
   const { currentProduct, loading, error, message } = useSelector(
@@ -124,27 +127,10 @@ function DetailProduct() {
     });
   };
 
-  const addToCart = () => {
-    setLoadingOfAddToCart(true);
-    dispatch(addProductToCartAsync(currentProduct.id));
-  };
-
   return (
-    <main className="">
-      <CatagoriesNav className=" mt-4 " />
-      <div className="px-[5%] mx-[10%] mt-10 ">
-        <Breadcrumbs aria-label="breadcrumb">
-          <Link underline="hover" color="inherit" href="/">
-            Trang chủ
-          </Link>
-          <Link underline="hover" color="inherit" href="/tat-ca-san-pham">
-            Sản phẩm
-          </Link>
-          <Typography color="text.primary">{currentProduct.name}</Typography>
-        </Breadcrumbs>
-      </div>
-      {
-        <section className="flex px-[5%] mx-[10%] mb-10">
+    <div className="w-full px-[10%] flex ">
+      <div className="w-[70%]">
+      <section className="flex px-[5%] mx-[10%] mb-10">
           <div className="w-5/12">
             <div>
               <span className="w-[90%] text-pink text-sm text-end block mt-4 mx-auto">
@@ -183,87 +169,8 @@ function DetailProduct() {
                 ))}
             </div>
           </div>
-          <div className="w-6/12 px-3 flex flex-col justify-between pb-10">
-            <h2 className="mt-6 text-3xl font-normal">{currentProduct.name}</h2>
-            <div className="flex my-2">
-              <span className="text-xl ml-2 line-through mx-1 text-gray-400">
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(currentProduct.price * 1.2)}
-              </span>
-              <span className="text-pink text-2xl mx-2 ">
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(currentProduct.price)}
-              </span>
-              <span className="text-[12px] text-black text-end">
-                (Đã bao gồm VAT)
-              </span>
-            </div>
-            <div>
-              <div>Sản phầm gồm</div>
-              {currentProduct.ingredients?.map((ingredient, index) => (
-                <div key={index} className="ml-4">
-                  <span className="text-pink">{ingredient.name}</span>
-                  <span className="text-black ml-4">
-                    x{ingredient.quantity}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <p className="text-[12px]">
-              *Lưu ý: Hình ảnh sản phẩm chỉ mang tính chất thiết kế tham khảo.
-              Vì các loại hoa sẽ được thay đổi theo ngày, theo mùa, chúng tôi
-              khuyến khích khách hàng ĐỂ LẠI LỜI NHẮN, để nhận được tư vấn hoa
-              phù hợp theo nhu cầu của quý khách.
-            </p>
-            <div className="flex justify-around px-3">
-              <Button
-                onClick={() => {
-                  addToCart();
-                }}
-                className="w-[40%] h-[45px] mx-auto"
-                color="black"
-              >
-                {loading && loadingOfAddToCart ? (
-                  <div className="pt-1">
-                    <Lottie
-                      options={{
-                        loop: true,
-                        autoplay: true,
-                        animationData: addToCartSVG,
-                      }}
-                      width={35}
-                    />
-                  </div>
-                ) : (
-                  "Thêm vào giỏ hàng"
-                )}
-              </Button>
-              <Button className="w-[45%] h-[45px] mx-auto" color="pink">
-                Mua ngay
-              </Button>
-            </div>
-            <p>Gọi ngay: 1900 4702</p>
-            <hr />
-            <p>Danh mục: {category}</p>
-            <hr />
-            <div>
-              <FacebookIcon className="mx-2 cursor-pointer" fontSize="small" />
-              <MailOutlineIcon
-                className="mx-2 cursor-pointer"
-                fontSize="small"
-              />
-              <LocalPhoneIcon
-                className="mx-2 cursor-pointer"
-                fontSize="small"
-              />
-            </div>
-          </div>
+          {/* Thêm miêu tả ở đây */}
         </section>
-      }
       <hr className="w-[80%] mx-auto" />
       <section className=" px-[5%] mx-[10%] mt-10 mb-10">
         <div className="border-2 w-fit px-6 py-2 border-t-4 ml-10 border-b-0 ">
@@ -274,20 +181,17 @@ function DetailProduct() {
             <p className="my-8 px-[5%]">{currentProduct.description}</p>
           )}
         </div>
+        
       </section>
-      <section className="best-seller px-[10%] my-20 ">
-        <h3 className="text-5xl font-fontItalianno text-center my-6">
-          Sản phẩm đề xuất
+      </div>
+      <div className=" w-[30%]">
+        <h3 className=" font-fontItalianno text-[36px] mt-10 leading-[96px text-center">
+             Bài viết nổi bật
         </h3>
-        <ProductCarousel products={newestProducts} />
-        <div className="full flex flex-col items-center mt-8">
-          <Button className={"px-12 py-2 mt-3"} color="black">
-            Xem thêm
-          </Button>
-        </div>
-      </section>
-    </main>
-  );
+        {/* Thêm bài viết nổi bật ở đây */}
+      </div>
+    </div>
+  )
 }
 
-export default DetailProduct;
+export default DetailWiki
