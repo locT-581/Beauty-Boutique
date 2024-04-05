@@ -2,7 +2,8 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import ProductCard from "../ProductCard";
-
+import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import { db } from "../../config/firebaseConfig";
 import "./styles.css";
 function ProductCarousel({ products = [] }) {
   const settings = {

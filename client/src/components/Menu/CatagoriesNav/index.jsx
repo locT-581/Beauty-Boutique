@@ -1,4 +1,6 @@
 import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 
 function CatagoriesNav({ className = "", ...rest }) {
   const { pathname } = useLocation();
@@ -29,17 +31,17 @@ function CatagoriesNav({ className = "", ...rest }) {
                 "cursor-pointer hover:text-yellow hover:border-b-2 hover:border-b-yellow transition-all duration-75 px-1"
           }
         >
-          Đối tượng
+        Đối tượng
         </li>
         <li
           className={
-            pathname === ""
+            pathname === "/chu-de"
               ? "border-b-2 border-b-yellow "
               : "" +
                 "cursor-pointer hover:text-yellow hover:border-b-2 hover:border-b-yellow transition-all duration-75 px-1"
           }
         >
-          Chủ đề
+        <Link to="/chu-de">Chủ đề</Link>
         </li>
         <li
           className={
@@ -57,7 +59,7 @@ function CatagoriesNav({ className = "", ...rest }) {
               ? "border-b-2 border-b-yellow "
               : "" +
                 "cursor-pointer hover:text-yellow hover:border-b-2 hover:border-b-yellow transition-all duration-75 px-1"
-          }
+          } 
         >
           Màu sắc
         </li>

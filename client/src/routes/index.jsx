@@ -2,8 +2,12 @@ import { lazy } from "react";
 import AdminLayout from "../components/Layouts/AdminLayout.jsx";
 import DefaultLayout from "../components/Layouts/DefaultLayout.jsx";
 
-const User = lazy(() => import("../components/user/Info/index.jsx"));
+// import { defaultMethod } from "react-router-dom/dist/dom.jsx";
 const Home = lazy(() => import("../components/Home/index.jsx"));
+const Wiki = lazy(() => import("../components/Wiki/index.jsx"));
+const Blog = lazy(() => import("../components/Blog/index.jsx"));
+const Reader = lazy(() => import("../components/Blog/Reader.jsx"));
+
 const ProductManagement = lazy(() =>
   import("../components/Pages/ProductManagement.jsx")
 );
@@ -28,8 +32,9 @@ const publicRouter = [
     element: DetailProduct,
     layout: DefaultLayout,
   },
-  { path: "/thong-tin/", element: User, layout: DefaultLayout },
-
+  { path: "/wikiFlower", element: Wiki, layout: null },
+  { path: "/chu-de", element: Blog, layout: null },
+  { path: "/blogreader/:id", element: Reader, layout: DefaultLayout },
   { path: "*", element: () => <div>Page not found</div>, layout: null },
 ];
 
