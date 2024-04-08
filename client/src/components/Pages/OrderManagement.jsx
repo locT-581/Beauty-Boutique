@@ -19,7 +19,7 @@ function OrderManagement({ title }) {
   const dispatch = useDispatch();
   const { isNewOrder } = useSelector((state) => state.productSlice);
 
-  const [orderStatus, setOrderStatus] = useState([]);
+  const [orderStatus, setOrderStatus] = useState([   ]);
   useEffect(() => {
     const fetchOrderStatus = async () => {
       const data = await getOrderStatus();
