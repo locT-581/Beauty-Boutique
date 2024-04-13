@@ -1,0 +1,12 @@
+.slick-prev:before,
+.slick-next:before {
+  color: #ee9ea4 !important;
+}
+
+.slick-dots {
+  bottom: -10px !important;
+}
+.slick-slide {
+  display: flex !important;
+  justify-content: center !important;
+}

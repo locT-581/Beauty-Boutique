@@ -60,7 +60,7 @@ function Header({ className = " ", ...rest }) {
         <nav className="w-8/12 flex pl-[3%]">
           <ul className="flex w-full">
             <li className="px-[1%] hover:scale-105 hover:text-slate-100">
-              <Link to="/">Trang chủ</Link>
+              <Link to="/trangchu">Trang chủ</Link>
             </li>
             <li className="px-[1%] hover:scale-105 hover:text-slate-100">
               <Link to="/chu-de">Chủ đề</Link>
