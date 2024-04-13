@@ -39,6 +39,4 @@ router.put(
   productController.updateProductInCart
 );
 
-router.post("/add-order", isAuthenticated, productController.addOrder);
-
 export default router;
