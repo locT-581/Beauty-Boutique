@@ -468,8 +468,10 @@ export const addOrder = catchAsync(async (req, res, next) => {
         .collection("users")
         .doc(user.uid)
         .collection("orders-history");
+
       userOrderCollection
-        .add(newOrder)
+        .doc(doc.id)
+        .set(newOrder)
         .then(() => {
           res.status(200).json({
             success: true,

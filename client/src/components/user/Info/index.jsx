@@ -1,16 +1,10 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { useNavigate } from "react-router-dom";
-import {
-  getOrderHistory,
-  getOrderStatus,
-  getOrdersByStatus,
-  updateOrderStatus,
-} from "../../../utils/storage";
+import { getOrderHistory, getOrderStatus } from "../../../utils/storage";
 import Button from "../../../UI/Button";
+import { collection, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../../../config/firebaseConfig";
-import { collection, doc } from "firebase/firestore";
 
 function User({ title }) {
   const { user } = useSelector((state) => state.authSlice);
@@ -18,66 +12,59 @@ function User({ title }) {
 
   const [activeModes, setActiveModes] = useState("info");
   const [orderStatus, setOrderStatus] = useState([]);
+
   useEffect(() => {
-    const fetchOrderStatus = async () => {
+    (async () => {
       const data = await getOrderStatus();
       setOrderStatus(data);
-    };
-    fetchOrderStatus();
+    })();
   }, [isNewOrder]);
 
   const [orderHistory, setOrderHistory] = useState([{}]);
   const [activeTab, setActiveTab] = useState("pending");
-  const [orders, setOrders] = useState([]);
-
-  const fetchOrders = async () => {
-    const data = await getOrdersByStatus(activeTab);
-    setOrders(data);
-  };
-
-  // const getHistory = async () => {
-  //   const data = await getOrderHistory(user.uid);
-  //   setOrderHistory(data);
-  //   console.log(data);
-  // };
-
-  // useEffect(() => {
-  //   getHistory();
-  // }, []);
+  // const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    fetchOrders();
-  }, [activeTab]);
+    const getHistory = async (userId) => {
+      const data = await getOrderHistory(userId);
+      // get the order have status is pending
+      const orderHistory = data.filter(
+        (order) => order.orderStatus === activeTab
+      );
+      setOrderHistory(orderHistory);
+    };
+    if (Object.keys(user).length > 0) {
+      getHistory(user.uid);
+    }
+  }, [activeTab, user]);
 
   const handleTabClick = (e) => {
     const tab = e.target;
     setActiveTab(tab.id);
   };
 
-  const handleFinish = (id) => {
-    if (activeTab === "completed");
-    else if (activeTab === "pending") {
-      updateOrderStatus(id, "awaiting-fulfillment");
-    } else if (activeTab === "awaiting-fulfillment") {
-      updateOrderStatus(id, "shipped");
-    } else if (activeTab === "shipped") {
-      updateOrderStatus(id, "completed");
-    }
-    fetchOrders();
-  };
-
-  const handleReject = (id) => {
-    updateOrderStatus(id, "declined");
-    fetchOrders();
-  };
-
   const [showPayment, setShowPayment] = useState(false);
   const [detailOrder, setDetailOrder] = useState();
+
   const handleShowDetail = (id) => {
     setShowPayment(true);
-    const order = orders.find((order) => order.id === id);
+    const order = orderHistory.find((order) => order.id === id);
     setDetailOrder(order);
     console.log(order);
+  };
+
+  const handleConfirm = async (id) => {
+    const querySnapshot = await getDocs(
+      collection(db, "users", user.uid, "orders-history")
+    );
+    querySnapshot.forEach((doc) => {
+      if (doc.id === id) {
+        updateDoc(doc.ref, {
+          userConfirm: true,
+        });
+      }
+    });
+    window.location.reload();
   };
 
   return (
@@ -308,17 +295,7 @@ function User({ title }) {
           >
             Lịch sử mua hàng
           </div>
-          <div
-            onClick={() => {
-              setActiveModes("change-password");
-            }}
-            className={
-              "w-full px-4 mx-4 py-3 border cursor-pointer hover:bg-soft-pink  first-letter:" +
-              (activeModes === "change-password" ? "  bg-soft-pink" : "")
-            }
-          >
-            Đổi mật khẩu
-          </div>
+
           <div
             onClick={() => {}}
             className="w-full px-4 mx-4 py-3 border cursor-pointer hover:bg-soft-pink"
@@ -396,7 +373,7 @@ function User({ title }) {
               </div>
               <div className=" ">
                 <div className="mt-10 overflow-y-auto">
-                  {orders.map((order, i) => {
+                  {orderHistory?.map((order, i) => {
                     // Change timestamp to date
                     const date = new Date(order.timestamp.seconds * 1000);
                     const formattedDate = `${date.getDate()}/${
@@ -459,30 +436,17 @@ function User({ title }) {
                                 currency: "VND",
                               }).format(order.total)}
                           </span>
-                          {activeTab !== "declined" &&
-                            activeTab !== "completed" && (
-                              <div>
-                                <button
-                                  onClick={() => {
-                                    handleReject(order.id);
-                                  }}
-                                  className="text-pink px-10 "
-                                >
-                                  Từ chối
-                                </button>
-                                <Button
-                                  onClick={() => {
-                                    handleFinish(order.id);
-                                  }}
-                                  type="button"
-                                  className="px-5 py-2"
-                                >
-                                  {activeTab === "shipped"
-                                    ? "Hoàn thành"
-                                    : "Xác nhận"}
-                                </Button>
-                              </div>
-                            )}
+                          {activeTab === "completed" && !order.userConfirm && (
+                            <div>
+                              <Button
+                                onClick={() => handleConfirm(order.id)}
+                                type="button"
+                                className="px-5 py-2"
+                              >
+                                Xác nhận đã nhận hàng
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     );

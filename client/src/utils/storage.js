@@ -124,9 +124,19 @@ export const getOrderStatus = async () => {
   return tempDocs;
 };
 
-export const updateOrderStatus = async (id, status) => {
-  await updateDoc(doc(db, "orders", id), {
+export const updateOrderStatus = async (orderId, userId, status) => {
+  await updateDoc(doc(db, "orders", orderId), {
     orderStatus: status,
+  });
+
+  // update user order history
+  const orderRef = doc(db, "orders", orderId);
+  const orderDoc = await getDoc(orderRef);
+  const orderData = orderDoc.data();
+
+  const userOrderRef = doc(db, "users", userId, "orders-history", orderId);
+  await updateDoc(userOrderRef, {
+    ...orderData,
   });
 };
 
@@ -144,10 +154,14 @@ export const reduceStock = async (id, quantity) => {
   });
 };
 
-// export const getOrderHistory = async (userId) => {
-//   // get orders history is sub collection of user in firestore
-//   const cartRef = doc(db, "users", userId, "orders-history");
-//   getDoc(cartRef).then((doc) => {
-//     console.log(doc.data());
-//   });
-// };
+export const getOrderHistory = async (userId) => {
+  const tempDocs = [];
+
+  const querySnapshot = await getDocs(
+    collection(db, "users", userId, "orders-history")
+  );
+  querySnapshot.forEach((doc) => {
+    tempDocs.push({ id: doc.id, ...doc.data() });
+  });
+  return tempDocs;
+};

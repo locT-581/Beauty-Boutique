@@ -19,7 +19,7 @@ function OrderManagement({ title }) {
   const dispatch = useDispatch();
   const { isNewOrder } = useSelector((state) => state.productSlice);
 
-  const [orderStatus, setOrderStatus] = useState([   ]);
+  const [orderStatus, setOrderStatus] = useState([]);
   useEffect(() => {
     const fetchOrderStatus = async () => {
       const data = await getOrderStatus();
@@ -52,20 +52,23 @@ function OrderManagement({ title }) {
     setActiveTab(tab.id);
   };
 
-  const handleFinish = (id) => {
+  const handleFinish = (orderId) => {
+    const order = orders.find((order) => order.id === orderId);
+    const userId = order.userId;
     if (activeTab === "completed");
     else if (activeTab === "pending") {
-      updateOrderStatus(id, "awaiting-fulfillment");
+      updateOrderStatus(orderId, userId, "awaiting-fulfillment");
     } else if (activeTab === "awaiting-fulfillment") {
-      updateOrderStatus(id, "shipped");
+      updateOrderStatus(orderId, userId, "shipped");
     } else if (activeTab === "shipped") {
-      updateOrderStatus(id, "completed");
+      updateOrderStatus(orderId, userId, "completed");
     }
     fetchOrders();
   };
 
   const handleReject = (id) => {
-    updateOrderStatus(id, "declined");
+    const userId = orders.find((order) => order.id === id).userId;
+    updateOrderStatus(id, userId, "declined");
     fetchOrders();
   };
 

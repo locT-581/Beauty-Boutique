@@ -23,6 +23,7 @@ const OrderManagement = lazy(() =>
 const EditPost = lazy(() => import("../components/Pages/EditPost.jsx"));
 const EditProduct = lazy(() => import("../components/Pages/EditProduct"));
 const DetailProduct = lazy(() => import("../components/DetailProduct"));
+const User = lazy(() => import("../components/user/Info"));
 
 const publicRouter = [
   { path: "/", element: Home, layout: null },
@@ -32,9 +33,10 @@ const publicRouter = [
     element: DetailProduct,
     layout: DefaultLayout,
   },
-  { path: "/wikiFlower", element: Wiki, layout: null },
-  { path: "/chu-de", element: Blog, layout: null },
-  { path: "/blogreader/:id", element: Reader, layout: DefaultLayout },
+  { path: "/wikiFlower", element: Wiki, layout: DefaultLayout },
+  { path: "/tin-tuc", element: Blog, layout: DefaultLayout },
+  { path: "/tin-tuc/:id", element: Reader, layout: DefaultLayout },
+  { path: "/tai-khoan/:id", element: User, layout: DefaultLayout },
   { path: "*", element: () => <div>Page not found</div>, layout: null },
 ];
 

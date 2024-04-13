@@ -50,7 +50,7 @@ function Header({ className = " ", ...rest }) {
       <BBackdrop>{element}</BBackdrop>
       <header
         className={
-          "bg-pink w-full flex justify-between items-center text-white px-[10%] py-[1%] " +
+          " w-full flex justify-between items-center text-white px-[10%] py-[1%] " +
           className
         }
       >

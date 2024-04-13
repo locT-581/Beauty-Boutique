@@ -45,7 +45,7 @@ img {
   user-select: none;
 }
 
-@layer base {
+@layer base { 
   /* body {
     @apply bg-background font-fontCodePro;
   } */

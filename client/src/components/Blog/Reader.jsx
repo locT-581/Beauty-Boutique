@@ -1,26 +1,28 @@
-import Header from "../Header";
-import Footer from "../Footer";
-import { Link } from "react-router-dom";
-function BlogReader () {
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
-    return (
-        <main>
-            <Header/>
-            <div className="text-center text-[30px] mx-[200px] border-b-[4px] border-indigo-900">
-                <h1>
-                    Hoa chúc mừng thành công đẹp, sang trọng
-                </h1>
-
-            </div>
-            <p className="text-wrap mx-[200px]">
-                Câu hỏi: “Tặng hoa chúc mừng thành công như thế nào” là câu hỏi đang nhận được rất nhiều sự quan tâm của các bạn.
-                mọi người. Hiểu được tâm lý này nên trong nội dung dưới đây chúng tôi sẽ chia sẻ một số thông tin về
-                vấn đề này để bạn có thể hiểu rõ hơn và trả lời được câu hỏi này cho mình. Hãy theo dõi bài viết chia sẻ
-                dưới.
-            </p>
-            <Footer/>
-        </main>
-       
-    );
+function BlogReader() {
+  const { blogs } = useSelector((state) => state.blogSlice);
+  const { id } = useParams();
+  const [post, setPost] = useState({});
+  useEffect(() => {
+    const post = blogs.find((post) => post.id === id);
+    setPost(post);
+  }, [blogs, id]);
+  useEffect(() => {
+    document.getElementById("content").innerHTML = post.content;
+  }, [post]);
+  return (
+    <>
+      <div className="w-7/12 mx-auto my-20 ">
+        <div className="text-center text-[30px] ">
+          <h1>{post.title}</h1>
+        </div>
+        <div className="-mx-[13%] border-b-2 opacity-75 my-6" />
+        <p id="content" className="text-wrap "></p>
+      </div>
+    </>
+  );
 }
 export default BlogReader;

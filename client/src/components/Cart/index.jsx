@@ -210,6 +210,7 @@ function Cart() {
       total: total,
       paymentStatus: paymentMethod.current === "cash" ? "paid" : "wait-payment",
       orderStatus: "pending",
+      userConfirm: false,
     };
     const result = await createOrder({ order });
     if (result) {
