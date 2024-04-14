@@ -101,7 +101,7 @@ function Home() {
         </div>
       </div>
       <div className="bg-pink flex px-[10%]">
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center w-1/2">
           <img
             src="https://firebasestorage.googleapis.com/v0/b/beauty-boutique-57f03.appspot.com/o/assets%2Fstill-life-daisy-flowers%201.png?alt=media&token=5e0e5461-1081-4dae-b2ac-a16aa9d1b9b5"
             alt="search"
@@ -128,33 +128,35 @@ function Home() {
                 className="-ml-11 text-black opacity-45 cursor-pointer hover:opacity-70"
               />
             </div>
-            <button
-              onMouseEnter={(e) => {
-                const span = document.createElement("span");
-                span.innerText = "Hình ảnh";
-                span.id = "image-span";
-                span.style.opacity = "0";
-                span.className =
-                  "text-black whitespace-nowrap transition-all duration-300 px-2";
-                e.target.appendChild(span);
-                setTimeout(() => {
-                  span.style.opacity = "1";
-                }, 70);
-              }}
-              onMouseLeave={(e) => {
-                if (e.target.lastChild.id === "image-span") {
-                  e.target.removeChild(e.target.lastChild);
+            <Link to="http://localhost:8502/">
+              <button
+                onMouseEnter={(e) => {
+                  const span = document.createElement("span");
+                  span.innerText = "Hình ảnh";
+                  span.id = "image-span";
+                  span.style.opacity = "0";
+                  span.className =
+                    "text-black whitespace-nowrap transition-all duration-300 px-2";
+                  e.target.appendChild(span);
+                  setTimeout(() => {
+                    span.style.opacity = "1";
+                  }, 70);
+                }}
+                onMouseLeave={(e) => {
+                  if (e.target.lastChild.id === "image-span") {
+                    e.target.removeChild(e.target.lastChild);
+                  }
+                }}
+                className={
+                  "w-[37px] border rounded-full p-[6px] mx-2 bg-white" +
+                  " text-black flex items-center" +
+                  " justify-center transition-all duration-400 hover:w-[170px]"
                 }
-              }}
-              className={
-                "w-[37px] border rounded-full p-[6px] mx-2 bg-white" +
-                " text-black flex items-center" +
-                " justify-center transition-all duration-400 hover:w-[170px]"
-              }
-              color="white"
-            >
-              <ImageSearchIcon fontSize="medium" color="inherit" />
-            </button>
+                color="white"
+              >
+                <ImageSearchIcon fontSize="medium" color="inherit" />
+              </button>
+            </Link>
           </div>
           <Button className={"px-12 py-2 mt-9"} color="white">
             Tìm kiếm

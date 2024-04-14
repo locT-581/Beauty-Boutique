@@ -134,6 +134,7 @@ function EditProduct() {
       console.log(error);
     }
   };
+
   const [categories, setCategories] = useState([]);
   /*
   [{
@@ -156,36 +157,19 @@ function EditProduct() {
   }]
   */
   const getCategories = async () => {
-    const mainCollectionName = "categories";
-    const subCollectionName = ["categories-topic", "categories-object"];
     const data = [];
+    const catagoriesDocs = await getDocs(collection(db, "categories"));
     try {
-      const mainCollectionRef = collection(db, mainCollectionName);
-      const mainQuerySnapshot = await getDocs(mainCollectionRef);
-
-      const promises = mainQuerySnapshot.docs.map(async (mainDoc, index) => {
-        const mainData = { id: mainDoc.id, ...mainDoc.data(), sub: [] };
-        data.push(mainData);
-
-        const subCollectionRef = collection(
-          mainDoc.ref,
-          subCollectionName[index]
-        );
-        const subQuerySnapshot = await getDocs(subCollectionRef);
-
-        subQuerySnapshot.forEach((subDoc) => {
-          mainData.sub.push({ id: subDoc.id, ...subDoc.data() });
-        });
+      catagoriesDocs.forEach((doc) => {
+        console.log(doc.data());
+        data.push({ id: doc.id, ...doc.data() });
       });
-
-      await Promise.all(promises).then(() => {
-        console.log(data);
-        setCategories(data);
-      });
+      setCategories(data);
     } catch (error) {
       console.log(error);
     }
   };
+
   const [colors, setColors] = useState([]);
   const getColors = async () => {
     try {
@@ -599,21 +583,13 @@ function EditProduct() {
                 id="category"
               >
                 {categories.map((category) => (
-                  <optgroup
-                    className="text-lg"
+                  <option
+                    selected={category.id === form.category}
                     key={category.id}
-                    label={category.name}
+                    value={category.id}
                   >
-                    {category.sub.map((sub) => (
-                      <option
-                        selected={sub.id === form.category}
-                        key={sub.id}
-                        value={sub.id}
-                      >
-                        {sub.name}
-                      </option>
-                    ))}
-                  </optgroup>
+                    {category.name}
+                  </option>
                 ))}
               </select>
             </div>

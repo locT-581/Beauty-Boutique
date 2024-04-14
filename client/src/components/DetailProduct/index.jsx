@@ -131,16 +131,16 @@ function DetailProduct() {
 
   return (
     <main className="">
-      <CatagoriesNav className=" mt-4 " />
-      <div className="px-[5%] mx-[10%] mt-10 ">
+      {/* <CatagoriesNav className=" mt-4 " /> */}
+      <div className="px-[5%] mx-[10%] mt-10 text-sm">
         <Breadcrumbs aria-label="breadcrumb">
           <Link underline="hover" color="inherit" href="/">
-            Trang chủ
+            <p className="text-sm">Trang chủ</p>
           </Link>
-          <Link underline="hover" color="inherit" href="/tat-ca-san-pham">
-            Sản phẩm
+          <Link underline="hover" color="inherit" href="/san-pham">
+            <p className="text-sm">Sản phẩm</p>
           </Link>
-          <Typography color="text.primary">{currentProduct.name}</Typography>
+          <p className="text-sm font-bold">{currentProduct.name}</p>
         </Breadcrumbs>
       </div>
       {
@@ -275,11 +275,15 @@ function DetailProduct() {
           )}
         </div>
       </section>
-      <section className=" best-seller px-[10%] my-20 ">
+      <section className="best-seller px-[10%] my-20 ">
         <h3 className="text-5xl font-fontItalianno text-center my-6">
           Sản phẩm đề xuất
         </h3>
-        <ProductCarousel products={newestProducts} />
+        <ProductCarousel
+          products={newestProducts.filter(
+            (product) => product.displayMode === "public"
+          )}
+        />
         <div className="full flex flex-col items-center mt-8">
           <Button className={"px-12 py-2 mt-3"} color="black">
             Xem thêm
@@ -288,7 +292,6 @@ function DetailProduct() {
       </section>
     </main>
   );
-  
 }
 
 export default DetailProduct;

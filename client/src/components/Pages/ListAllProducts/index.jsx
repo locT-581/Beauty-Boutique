@@ -1,12 +1,9 @@
 import Search from "@mui/icons-material/Search";
 import Button from "../../../UI/Button";
-import Header from "../../Header";
 import CatagoriesNav from "../../Menu/CatagoriesNav";
 import ImageSearchIcon from "@mui/icons-material/ImageSearch";
 import ProductCarousel from "../../ProductCarousel";
-import Footer from "../../Footer";
-import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   collection,
   getDocs,
@@ -27,7 +24,15 @@ function ListAllProducts() {
   const [colorInDB, setColorInDB] = useState([]);
   const [flowerTypeInDB, setFlowerTypeInDB] = useState([]);
 
+  const rawProducts = useRef();
+
   const [products, setProducts] = useState([]);
+  const [sortMode, setSortMode] = useState("newest");
+
+  const [filter, setFilter] = useState({
+    flowerType: [],
+    color: [],
+  });
 
   useEffect(() => {
     getNewestProducts();
@@ -50,14 +55,23 @@ function ListAllProducts() {
       });
     });
 
-    // Get products from firestore
-    const productsRef = collection(db, "products");
-    getDocs(productsRef).then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        setProducts((prev) => [...prev, { id: doc.id, ...doc.data() }]);
-      });
-    });
+    getProductFromDB();
   }, []);
+
+  const getProductFromDB = async () => {
+    const tempProducts = [];
+    try {
+      const productsRef = collection(db, "products");
+      getDocs(productsRef).then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          tempProducts.push({ id: doc.id, ...doc.data() });
+        });
+        rawProducts.current = tempProducts;
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getNewestProducts = async () => {
     try {
@@ -79,7 +93,7 @@ function ListAllProducts() {
       const productsRef = collection(db, "products");
       const q = query(
         productsRef,
-        where("category", "==", "z4UCqfP5PmDQVHBOurkv"),
+        where("category", "==", "birthday"),
         limit(8)
       );
       getDocs(q).then((querySnapshot) => {
@@ -100,7 +114,7 @@ function ListAllProducts() {
       const productsRef = collection(db, "products");
       const q = query(
         productsRef,
-        where("category", "==", "uB6NpTsBgiUVknibTapn"),
+        where("category", "==", "congratulation"),
         limit(8)
       );
       getDocs(q).then((querySnapshot) => {
@@ -117,8 +131,79 @@ function ListAllProducts() {
   };
 
   useEffect(() => {
-    console.log(activeTab);
+    // filter products by category
+    if (activeTab.root === "topic") {
+      const tempProducts = [];
+      rawProducts.current.forEach((product) => {
+        if (product.category === activeTab.sub) {
+          tempProducts.push(product);
+        }
+      });
+      setProducts(tempProducts);
+    } else if (activeTab.root === "flower") {
+      const tempProducts = [];
+      if (activeTab.sub === "all") {
+        setProducts(rawProducts.current);
+        return;
+      }
+      rawProducts.current.forEach((product) => {
+        product.ingredients.forEach((ingredient) => {
+          if (ingredient.id === activeTab.sub) {
+            tempProducts.push(product);
+          }
+        });
+      });
+      setProducts(tempProducts);
+    } else if (activeTab.root === "color") {
+      const tempProducts = [];
+      rawProducts.current.forEach((product) => {
+        product.colors.forEach((color) => {
+          if (color === activeTab.sub) {
+            tempProducts.push(product);
+          }
+        });
+      });
+      setProducts(tempProducts);
+    } else {
+      setProducts(rawProducts.current);
+    }
   }, [activeTab]);
+
+  // useEffect(() => {
+  //   if (filter.flowerType.length === 0 && filter.color.length === 0) {
+  //     if (activeTab.root !== "all") {
+  //       const tempProducts = [];
+  //       rawProducts.current.forEach((product) => {
+  //         if (product.category === activeTab.sub) {
+  //           tempProducts.push(product);
+  //         }
+  //       });
+  //       setProducts(tempProducts);
+  //     } else {
+  //       setProducts(rawProducts.current);
+  //     }
+  //     return;
+  //   }
+  //   let tempProducts = [];
+  //   products.forEach((product) => {
+  //     product.ingredients.forEach((ingredient) => {
+  //       if (filter.flowerType.includes(ingredient.id)) {
+  //         tempProducts.push(product);
+
+  //         // Remove duplicate in tempProducts
+  //         tempProducts = tempProducts.filter(
+  //           (product, index, self) =>
+  //             index === self.findIndex((p) => p.id === product.id)
+  //         );
+  //       }
+  //     });
+  //     setProducts(tempProducts);
+  //   });
+  // }, [filter]);
+
+  useEffect(() => {
+    console.log(products);
+  }, [products]);
 
   return (
     <>
@@ -126,7 +211,7 @@ function ListAllProducts() {
       {activeTab.root === "all" && (
         <div className="w-full">
           <div className="bg-pink flex px-[10%] mt-14">
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center w-1/2">
               <img
                 src="https://firebasestorage.googleapis.com/v0/b/beauty-boutique-57f03.appspot.com/o/assets%2Fstill-life-daisy-flowers%201.png?alt=media&token=5e0e5461-1081-4dae-b2ac-a16aa9d1b9b5"
                 alt="search"
@@ -190,7 +275,11 @@ function ListAllProducts() {
             <h3 className="text-5xl font-fontItalianno text-center my-6">
               Sản phẩm mới nhất
             </h3>
-            <ProductCarousel products={newestProducts} />
+            <ProductCarousel
+              products={newestProducts.filter(
+                (product) => product.displayMode === "public"
+              )}
+            />
             <div className="full flex flex-col items-center mt-8">
               <Button className={"px-12 py-2 mt-3"} color="black">
                 Xem thêm
@@ -202,7 +291,11 @@ function ListAllProducts() {
             <h3 className="text-5xl font-fontItalianno text-center my-6">
               Hoa Sinh Nhật
             </h3>
-            <ProductCarousel products={birthProducts} />
+            <ProductCarousel
+              products={birthProducts.filter(
+                (product) => product.displayMode === "public"
+              )}
+            />
             <div className="full flex flex-col items-center mt-8">
               <Button className={"px-12 py-2 mt-3"} color="black">
                 Xem thêm
@@ -214,7 +307,11 @@ function ListAllProducts() {
             <h3 className="text-5xl font-fontItalianno text-center my-6">
               Hoa Chúc Mừng
             </h3>
-            <ProductCarousel products={congratulationProducts} />
+            <ProductCarousel
+              products={congratulationProducts.filter(
+                (product) => product.displayMode === "public"
+              )}
+            />
             <div className="full flex flex-col items-center mt-8">
               <Button className={"px-12 py-2 mt-3"} color="black">
                 Xem thêm
@@ -225,79 +322,110 @@ function ListAllProducts() {
         </div>
       )}
       {activeTab.root !== "all" && (
-        <div className="px-[10%] flex">
-          <div className="w-3/12 flex justify-end">
-            <div className="w-4/5">
-              <div>
-                <label htmlFor="price" className="text-2xl">
-                  Khoảng giá
-                </label>
-                <input
-                  type="range"
-                  name="price"
-                  id="price"
-                  className="w-3/4 cursor-pointer"
-                />
-              </div>
-
-              <div className="py-4">
-                <label className="text-base font-medium mt-4 my-4">
-                  Loại hoa
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {flowerTypeInDB.map((flower) => (
-                    <div
-                      key={flower.id}
-                      className="w-full flex items-center justify-start gap-6 pl-[15%]"
-                    >
-                      <input
-                        type="checkbox"
-                        name="flower"
-                        id={flower.id}
-                        className="cursor-pointer"
-                      />
-                      <p>{flower.name}</p>
-                    </div>
-                  ))}
+        <div className="px-[10%] flex flex-col">
+          <h2 className="w-full font-fontItalianno text-center text-5xl my-4">
+            {(activeTab.sub === "birthday" && "Hoa sinh nhật") ||
+              (activeTab.sub === "congratulation" && "Hoa chúc mừng") ||
+              (activeTab.sub === "grandOpening" && "Hoa khai trương") ||
+              (activeTab.sub === "love" && "Hoa tình yêu")}
+          </h2>
+          <div className="w-full flex">
+            <div className="w-3/12 flex justify-end">
+              <div className="w-4/5">
+                <div className="py-4">
+                  <label className="text-base font-medium mt-4 my-4">
+                    Loại hoa
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {flowerTypeInDB.map((flower) => (
+                      <div
+                        key={flower.id}
+                        className="w-full flex items-center justify-start gap-6 pl-[15%]"
+                      >
+                        <input
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFilter({
+                                ...filter,
+                                flowerType: [...filter.flowerType, flower.id],
+                              });
+                            } else {
+                              setFilter({
+                                ...filter,
+                                flowerType: filter.flowerType.filter(
+                                  (item) => item !== flower.id
+                                ),
+                              });
+                            }
+                          }}
+                          type="checkbox"
+                          name="flower"
+                          id={flower.id}
+                          className="cursor-pointer"
+                        />
+                        <p>{flower.name}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div className="py-4">
-                <label
-                  htmlFor="color"
-                  className="text-base font-medium mt-4 my-4"
-                >
-                  Màu sắc
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {colorInDB.map((color) => (
-                    <div
-                      key={color.id}
-                      className="w-full flex items-center justify-start gap-6 pl-[15%]"
-                    >
-                      <input
-                        type="checkbox"
-                        name="color"
-                        id={color.id}
-                        className="cursor-pointer"
-                      />
-                      <p>{color.name}</p>
-                    </div>
-                  ))}
+                <div className="py-4">
+                  <label
+                    htmlFor="color"
+                    className="text-base font-medium mt-4 my-4"
+                  >
+                    Màu sắc
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {colorInDB.map((color) => (
+                      <div
+                        key={color.id}
+                        className="w-full flex items-center justify-start gap-6 pl-[15%]"
+                      >
+                        <input
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFilter({
+                                ...filter,
+                                color: [...filter.color, color.id],
+                              });
+                            } else {
+                              setFilter({
+                                ...filter,
+                                color: filter.color.filter(
+                                  (item) => item !== color.id
+                                ),
+                              });
+                            }
+                          }}
+                          type="checkbox"
+                          name="color"
+                          id={color.id}
+                          className="cursor-pointer"
+                        />
+                        <p>{color.name}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="w-9/12">
-            <div className="w-full flex flex-wrap gap-5">
-              {products.map((product) => (
-                <ProductCard
-                  className={"w-[300px]"}
-                  key={product.id}
-                  title={product.name}
-                  price={product.price}
-                  image={product.avatar}
-                />
-              ))}
+            <div className="w-9/12 flex justify-end">
+              <div className="w-[90%] flex flex-wrap gap-6">
+                {products?.map((product) =>
+                  product.displayMode === "public" ? (
+                    <ProductCard
+                      id={product.id}
+                      className={"w-[200px]"}
+                      key={product.id}
+                      title={product.name}
+                      price={product.price}
+                      image={product.avatar}
+                    />
+                  ) : (
+                    <></>
+                  )
+                )}
+              </div>
             </div>
           </div>
         </div>
