@@ -1,7 +1,9 @@
 import { lazy } from "react";
 import AdminLayout from "../components/Layouts/AdminLayout.jsx";
 import DefaultLayout from "../components/Layouts/DefaultLayout.jsx";
-
+import Wiki from "../components/Wiki/index.jsx";
+import Blog from "../components/Blog/index.jsx";
+import Reader from "../components/Blog/Reader.jsx";
 const Home = lazy(() => import("../components/Home/index.jsx"));
 const ProductManagement = lazy(() =>
   import("../components/Pages/ProductManagement.jsx")
@@ -15,12 +17,6 @@ const ListAllProducts = lazy(() =>
 const EditPost = lazy(() => import("../components/Pages/EditPost.jsx"));
 const EditProduct = lazy(() => import("../components/Pages/EditProduct"));
 const DetailProduct = lazy(() => import("../components/DetailProduct"));
-const FlowerRecognitionApp = lazy(() =>
-  import("../components/FlowerRecognitionApp")
-);
-const Payment = lazy(() => import("../components/Payment"));
-const DetailWiki = lazy(() => import("../components/Pages/WikiFlower"));
-const News = lazy(() => import("../components/Pages/News"));
 const FlowerRecognitionApp = lazy(() =>
   import("../components/FlowerRecognitionApp")
 );
@@ -43,12 +39,6 @@ const publicRouter = [
   { path: "/blog/:id", element: Reader, layout: DefaultLayout },
   { path: "/tai-khoan/:id", element: User, layout: DefaultLayout },
   { path: "*", element: () => <div>Page not found</div>, layout: null },
-
-  {
-    path: "/tim-hoa-bang-hinh-anh",
-    element: FlowerRecognitionApp,
-    layout: DefaultLayout,
-  },
 
   {
     path: "/tim-hoa-bang-hinh-anh",
