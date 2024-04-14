@@ -2,7 +2,6 @@ import { lazy } from "react";
 import AdminLayout from "../components/Layouts/AdminLayout.jsx";
 import DefaultLayout from "../components/Layouts/DefaultLayout.jsx";
 
-// import { defaultMethod } from "react-router-dom/dist/dom.jsx";
 const Home = lazy(() => import("../components/Home/index.jsx"));
 const Wiki = lazy(() => import("../components/Wiki/index.jsx"));
 const Blog = lazy(() => import("../components/Blog/index.jsx"));
@@ -23,21 +22,34 @@ const OrderManagement = lazy(() =>
 const EditPost = lazy(() => import("../components/Pages/EditPost.jsx"));
 const EditProduct = lazy(() => import("../components/Pages/EditProduct"));
 const DetailProduct = lazy(() => import("../components/DetailProduct"));
+const FlowerRecognitionApp = lazy(() =>
+  import("../components/FlowerRecognitionApp")
+);
+const Payment = lazy(() => import("../components/Payment"));
+const DetailWiki = lazy(() => import("../components/Pages/WikiFlower"));
+const News = lazy(() => import("../components/Pages/News"));
 const User = lazy(() => import("../components/user/Info"));
 
 const publicRouter = [
   { path: "/", element: Home, layout: null },
-  { path: "/tat-ca-san-pham", element: ListAllProducts, layout: DefaultLayout },
+  { path: "/san-pham", element: ListAllProducts, layout: DefaultLayout },
   {
     path: "/chi-tiet-san-pham/:id",
     element: DetailProduct,
     layout: DefaultLayout,
   },
   { path: "/wikiFlower", element: Wiki, layout: DefaultLayout },
-  { path: "/tin-tuc", element: Blog, layout: DefaultLayout },
-  { path: "/tin-tuc/:id", element: Reader, layout: DefaultLayout },
+  { path: "/wikiFlower/:id", element: DetailWiki, layout: DefaultLayout },
+  { path: "/blog", element: Blog, layout: DefaultLayout },
+  { path: "/blog/:id", element: Reader, layout: DefaultLayout },
   { path: "/tai-khoan/:id", element: User, layout: DefaultLayout },
   { path: "*", element: () => <div>Page not found</div>, layout: null },
+
+  {
+    path: "/tim-hoa-bang-hinh-anh",
+    element: FlowerRecognitionApp,
+    layout: DefaultLayout,
+  },
 ];
 
 const privateRouter = [

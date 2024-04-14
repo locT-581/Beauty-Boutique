@@ -14,7 +14,10 @@ function Wiki() {
     (async () => {
       const wikisCollection = collection(db, "flowers");
       const wikisSnapshot = await getDocs(wikisCollection);
-      const wikisList = wikisSnapshot.docs.map((doc) => doc.data());
+      const wikisList = wikisSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setWikis(wikisList);
     })();
     dispatch(getAllBlog());
@@ -45,9 +48,11 @@ function Wiki() {
                   {wiki.name}
                 </p>
                 <div className="full flex flex-col items-center ">
-                  <Button className={"px-5 py-2 mb-4"} color="black">
-                    Xem chi tiết
-                  </Button>
+                  <Link to={`/wikiFlower/${wiki.id}`}>
+                    <Button className={"px-5 py-2 mb-4"} color="black">
+                      Xem chi tiết
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -10,13 +10,13 @@ function Footer() {
             <Link to="/">Trang chủ</Link>
           </li>
           <li className="px-[1%] hover:scale-105 hover:text-pink">
-            <Link to="/chu-de">Chủ đề</Link>
+            <Link to="/san-pham">Mua sắm</Link>
           </li>
           <li className="px-[1%] hover:scale-105 hover:text-pink">
             <Link to="/wikiFlower">WikiFlower</Link>
           </li>
           <li className="px-[1%] hover:scale-105 hover:text-pink">
-            <Link to="/tin-tuc">Tin tức</Link>
+            <Link to="/blog">Blog</Link>
           </li>
           <li className="px-[1%] hover:scale-105 hover:text-pink">
             <a href="#about">Về chúng tôi</a>

@@ -21,7 +21,7 @@ function Blog() {
       <div className="mx-[200px] mb-[100px] mt-[30px] grid grid-cols-3 grid-rows-2 gap-5">
         {blogs.map((blog) =>
           blog.display !== "public" ? (
-            <Link to={`/tin-tuc/${blog.id}`}>
+            <Link to={`/blog/${blog.id}`}>
               <div className="mx-5 mt-5 flex justify-center">
                 <img
                   src={blog.avatar}

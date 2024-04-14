@@ -51,7 +51,7 @@ function Home() {
               <br /> Giao hoa tươi mỗi ngày và trong vòng một giờ.
             </p>
 
-            <Link to="/tat-ca-san-pham">
+            <Link to="/san-pham">
               <Button className={"px-12 py-2 ml-[15%] mt-8  "} color="white">
                 Mua ngay!
               </Button>

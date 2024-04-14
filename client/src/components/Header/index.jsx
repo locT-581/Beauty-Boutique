@@ -57,21 +57,21 @@ function Header({ className = " ", ...rest }) {
         <div className="pr-[1%] w-2/12">
           <Logo width="140" />
         </div>
-        <nav className="w-8/12 flex pl-[3%]">
-          <ul className="flex w-full">
-            <li className="px-[1%] hover:scale-105 hover:text-slate-100">
+        <nav className="w-8/12 flex pl-[3%] ">
+          <ul className="flex w-full gap-6">
+            <li className=" hover:scale-105 hover:text-slate-100">
               <Link to="/">Trang chủ</Link>
             </li>
-            <li className="px-[1%] hover:scale-105 hover:text-slate-100">
-              <Link to="/chu-de">Chủ đề</Link>
+            <li className=" hover:scale-105 hover:text-slate-100">
+              <Link to="/san-pham">Mua sắm</Link>
             </li>
-            <li className="px-[1%] hover:scale-105 hover:text-slate-100">
+            <li className=" hover:scale-105 hover:text-slate-100">
               <Link to="/wikiFlower">WikiFlower</Link>
             </li>
-            <li className="px-[1%] hover:scale-105 hover:text-slate-100">
-              <Link to="/tin-tuc">Tin tức</Link>
+            <li className=" hover:scale-105 hover:text-slate-100">
+              <Link to="/blog">Blog</Link>
             </li>
-            <li className="px-[1%] hover:scale-105 hover:text-slate-100">
+            <li className=" hover:scale-105 hover:text-slate-100">
               <a href="#about">Về chúng tôi</a>
             </li>
           </ul>

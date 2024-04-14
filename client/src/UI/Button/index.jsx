@@ -2,8 +2,8 @@ function Button({
   children,
   color = "black",
   type = "button",
-  className,
   disabled = false,
+  className,
   ...rest
 }) {
   // Check color is black => hover color is pink
