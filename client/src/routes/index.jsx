@@ -3,10 +3,6 @@ import AdminLayout from "../components/Layouts/AdminLayout.jsx";
 import DefaultLayout from "../components/Layouts/DefaultLayout.jsx";
 
 const Home = lazy(() => import("../components/Home/index.jsx"));
-const Wiki = lazy(() => import("../components/Wiki/index.jsx"));
-const Blog = lazy(() => import("../components/Blog/index.jsx"));
-const Reader = lazy(() => import("../components/Blog/Reader.jsx"));
-
 const ProductManagement = lazy(() =>
   import("../components/Pages/ProductManagement.jsx")
 );
@@ -16,12 +12,15 @@ const BlogManagement = lazy(() =>
 const ListAllProducts = lazy(() =>
   import("../components/Pages/ListAllProducts")
 );
-const OrderManagement = lazy(() =>
-  import("../components/Pages/OrderManagement.jsx")
-);
 const EditPost = lazy(() => import("../components/Pages/EditPost.jsx"));
 const EditProduct = lazy(() => import("../components/Pages/EditProduct"));
 const DetailProduct = lazy(() => import("../components/DetailProduct"));
+const FlowerRecognitionApp = lazy(() =>
+  import("../components/FlowerRecognitionApp")
+);
+const Payment = lazy(() => import("../components/Payment"));
+const DetailWiki = lazy(() => import("../components/Pages/WikiFlower"));
+const News = lazy(() => import("../components/Pages/News"));
 const FlowerRecognitionApp = lazy(() =>
   import("../components/FlowerRecognitionApp")
 );
@@ -50,6 +49,12 @@ const publicRouter = [
     element: FlowerRecognitionApp,
     layout: DefaultLayout,
   },
+
+  {
+    path: "/tim-hoa-bang-hinh-anh",
+    element: FlowerRecognitionApp,
+    layout: DefaultLayout,
+  },
 ];
 
 const privateRouter = [
@@ -72,10 +77,10 @@ const privateRouter = [
     title: "Quản lý khách hàng",
   },
   {
-    path: "/quanlydonhang",
-    element: OrderManagement,
+    path: "/quanlymagiamgia",
+    element: BlogManagement,
     layout: AdminLayout,
-    title: "Quản lý đơn hàng",
+    title: "Quản lý mã giảm giá",
   },
   {
     path: "/quanlythongke",

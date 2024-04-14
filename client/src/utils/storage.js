@@ -1,5 +1,6 @@
 import {
   deleteObject,
+  getBlob,
   getDownloadURL,
   listAll,
   ref,

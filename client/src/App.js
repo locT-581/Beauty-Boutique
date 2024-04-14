@@ -1,9 +1,11 @@
 import { Fragment, Suspense, useEffect } from "react";
+import { Fragment, Suspense, useEffect } from "react";
 import Logo from "./UI/Icon/LogoSpin";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { privateRouter, publicRouter } from "./routes";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { Route, Routes, useLocation } from "react-router-dom";
 import PrivateRoute from "./routes/PrivateRoute";
 
@@ -11,7 +13,6 @@ import { socket } from "./socket";
 import { useSelector } from "react-redux";
 
 function App() {
-  const { user } = useSelector((state) => state.authSlice);
   const { pathname } = useLocation();
   useEffect(() => {
     socket.on("connect", () => {

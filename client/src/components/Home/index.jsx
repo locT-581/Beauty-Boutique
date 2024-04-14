@@ -11,31 +11,8 @@ import "./styles.css";
 import Footer from "../Footer";
 import ProductCarousel from "../ProductCarousel";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
-import { db } from "../../config/firebaseConfig";
 
 function Home() {
-  const [newestProducts, setNewestProducts] = useState([]);
-
-  const getNewestProducts = async () => {
-    try {
-      // Get color from firestore
-      const productsRef = collection(db, "products");
-      const q = query(productsRef, orderBy("timestamp", "desc"), limit(8));
-      getDocs(q).then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          setNewestProducts((prev) => [...prev, { id: doc.id, ...doc.data() }]);
-        });
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    getNewestProducts();
-  }, []);
-
   return (
     <main className="overflow-x-hidden">
       <div id="banner-home" className="w-[100vw] h-[100vh]">
@@ -93,7 +70,7 @@ function Home() {
         </p>
       </div>
       <div className="px-[10%] my-10 ">
-        <ProductCarousel products={newestProducts} />
+        <ProductCarousel />
         <div className="full flex flex-col items-center mt-8">
           <Button className={"px-12 py-2 mt-3"} color="black">
             Xem thêm
