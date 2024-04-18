@@ -55,7 +55,9 @@ function Header({ className = " ", ...rest }) {
         }
       >
         <div className="pr-[1%] w-2/12">
-          <Logo width="140" />
+          <Link to="/">
+            <Logo width="140" />
+          </Link>
         </div>
         <nav className="w-8/12 flex pl-[3%] ">
           <ul className="flex w-full gap-6">
@@ -71,9 +73,9 @@ function Header({ className = " ", ...rest }) {
             <li className=" hover:scale-105 hover:text-slate-100">
               <Link to="/blog">Blog</Link>
             </li>
-            <li className=" hover:scale-105 hover:text-slate-100">
+            {/* <li className=" hover:scale-105 hover:text-slate-100">
               <a href="#about">Về chúng tôi</a>
-            </li>
+            </li> */}
           </ul>
         </nav>
         <div className="w-2/12 flex justify-between px-6">

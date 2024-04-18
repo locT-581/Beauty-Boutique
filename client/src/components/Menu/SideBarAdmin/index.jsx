@@ -37,7 +37,9 @@ function SideBarAdmin() {
     <div className="w-2/12 h-full pb-10 pt-16 border-r-[2px] flex flex-col justify-between fixed bottom-0">
       <div className="w-full">
         <div className="w-full flex justify-center -ml-2">
-          <Logo width="140" />
+          <Link to="/">
+            <Logo width="140" />
+          </Link>
         </div>
         <nav className="mt-14">
           <ul>
@@ -59,31 +61,13 @@ function SideBarAdmin() {
                 Bài viết
               </li>
             </Link>
-            <Link to="/quanlykhachhang">
+            <Link to="/quanlydonhang">
               <li
-                id="quanlykhachhang"
-                className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
-              >
-                <PeopleAltOutlinedIcon className="mx-2" />
-                Khách hàng
-              </li>
-            </Link>
-            <Link to="/quanlymagiamgia">
-              <li
-                id="quanlymagiamgia"
+                id="quanlydonhang"
                 className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
               >
                 <ConfirmationNumberOutlinedIcon className="mx-2" />
-                Voucher
-              </li>
-            </Link>
-            <Link to="/quanlythongke">
-              <li
-                id="quanlythongke"
-                className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]"
-              >
-                <BarChartOutlinedIcon className="mx-2" />
-                Thống kê
+                Đơn hàng
               </li>
             </Link>
           </ul>
@@ -91,7 +75,7 @@ function SideBarAdmin() {
       </div>
       <div>
         <ul>
-          <Link to="/trangchu">
+          <Link to="/">
             <li className="hover:bg-soft-pink py-3 cursor-pointer pl-2 border-b-[1px]">
               <HomeOutlinedIcon className="mx-2" />
               Trang chủ

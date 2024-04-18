@@ -350,7 +350,7 @@ function OrderManagement({ title }) {
         <div className="mt-10 overflow-y-auto">
           {orders.map((order, i) => {
             // Change timestamp to date
-            const date = new Date(order.timestamp.seconds * 1000);
+            const date = new Date(order.timestamp?.seconds * 1000);
             const formattedDate = `${date.getDate()}/${
               date.getMonth() + 1
             }/${date.getFullYear()}`;

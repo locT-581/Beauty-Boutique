@@ -51,7 +51,7 @@ function EditProduct() {
     price: 0,
     stock: 0,
     voucher: [],
-    category: "",
+    category: "birthday",
     colors: [],
   });
   useEffect(() => {
@@ -226,6 +226,7 @@ function EditProduct() {
     });
   };
   const handleChangeForm = (e) => {
+    console.log(e.target.value, e.target.name);
     if (e.target.name === "price") {
       // Check if the input is not a number
       if (isNaN(e.target.value)) {
@@ -522,22 +523,6 @@ function EditProduct() {
               </div>
             </div>
             <div className="w-1/2 px-3">
-              <div className="flex flex-col ">
-                <label className="my-1 px-2" htmlFor="voucher">
-                  Voucher
-                </label>
-                <select
-                  className="py-1 bg-white rounded-full border border-slate-300 px-5 outline-none caret-pink "
-                  name="voucher"
-                  id="voucher"
-                >
-                  {modes.map((mode) => (
-                    <option key={mode.id} value={mode.id}>
-                      {mode.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <div className="flex flex-col my-1">
                 <div className="my-1 px-2">
                   <span className="text-pink">*</span>Màu sắc
@@ -577,6 +562,7 @@ function EditProduct() {
                 <span className="text-pink">*</span>Phân loại sản phẩm
               </label>
               <select
+                defaultValue={form.category}
                 onChange={handleChangeForm}
                 className="py-1 bg-white rounded-full border border-slate-300 px-5 outline-none"
                 name="category"

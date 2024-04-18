@@ -14,6 +14,9 @@ const BlogManagement = lazy(() =>
 const ListAllProducts = lazy(() =>
   import("../components/Pages/ListAllProducts")
 );
+const OrderManagement = lazy(() =>
+  import("../components/Pages/OrderManagement.jsx")
+);
 const EditPost = lazy(() => import("../components/Pages/EditPost.jsx"));
 const EditProduct = lazy(() => import("../components/Pages/EditProduct"));
 const DetailProduct = lazy(() => import("../components/DetailProduct"));
@@ -67,10 +70,10 @@ const privateRouter = [
     title: "Quản lý khách hàng",
   },
   {
-    path: "/quanlymagiamgia",
-    element: BlogManagement,
+    path: "/quanlydonhang",
+    element: OrderManagement,
     layout: AdminLayout,
-    title: "Quản lý mã giảm giá",
+    title: "Quản lý đơn hàng",
   },
   {
     path: "/quanlythongke",

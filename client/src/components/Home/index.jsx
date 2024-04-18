@@ -20,6 +20,7 @@ function Home() {
 
   const getNewestProducts = async () => {
     try {
+      // Get color from firestore
       const productsRef = collection(db, "products");
       const q = query(productsRef, orderBy("timestamp", "desc"), limit(8));
       getDocs(q).then((querySnapshot) => {
@@ -68,9 +69,11 @@ function Home() {
             <br />
             đến với bạn
           </h3>
-          <Button className={"px-12 py-2 mt-3"} color="black">
-            Mua ngay!
-          </Button>
+          <Link to="/san-pham">
+            <Button className={"px-12 py-2 mt-3"} color="black">
+              Mua ngay!
+            </Button>
+          </Link>
         </div>
         <div className="w-1/2 flex justify-center items-center">
           <img
@@ -93,9 +96,11 @@ function Home() {
       <div className="px-[10%] my-10 ">
         <ProductCarousel products={newestProducts} />
         <div className="full flex flex-col items-center mt-8">
-          <Button className={"px-12 py-2 mt-3"} color="black">
-            Xem thêm
-          </Button>
+          <Link to="/san-pham">
+            <Button className={"px-12 py-2 mt-3"} color="black">
+              Xem thêm
+            </Button>
+          </Link>
         </div>
       </div>
       <div className="bg-pink flex px-[10%]">
@@ -115,8 +120,8 @@ function Home() {
             Bạn có thể tìm kiếm bông hoa mà mình mong muốn thông qua màu sắc,
             tên...ngay cả hình ảnh nữa đấy!
           </p>
-          <div className="w-[55%] flex items-center justify-center mt-4">
-            <div className="w-full flex">
+          <div className="w-[55%] flex items-center justify-center gap-4 mt-4 gap">
+            {/* <div className="w-full flex">
               <input
                 type="text"
                 className="border rounded-full outline-none text-black pl-4 pr-11 py-1 w-full"
@@ -125,7 +130,8 @@ function Home() {
                 fontSize="large"
                 className="-ml-11 text-black opacity-45 cursor-pointer hover:opacity-70"
               />
-            </div>
+            </div> */}
+            <div>Nhập hình ảnh </div>
             <Link to="http://localhost:8502/">
               <button
                 onMouseEnter={(e) => {
@@ -134,7 +140,7 @@ function Home() {
                   span.id = "image-span";
                   span.style.opacity = "0";
                   span.className =
-                    "text-black whitespace-nowrap transition-all duration-300 px-2";
+                    "text-black whitespace-nowrap transition-all duration-300 px-0";
                   e.target.appendChild(span);
                   setTimeout(() => {
                     span.style.opacity = "1";
@@ -156,9 +162,6 @@ function Home() {
               </button>
             </Link>
           </div>
-          <Button className={"px-12 py-2 mt-9"} color="white">
-            Tìm kiếm
-          </Button>
         </div>
       </div>
       <div id="about" className="pt-16">

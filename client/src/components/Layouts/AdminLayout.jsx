@@ -1,12 +1,45 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SideBarAdmin from "../Menu/SideBarAdmin";
 import loadingSVG from "../../assets/SVG/loading-svg.json";
 import lottieConfig from "../../config/lottieConfig";
 import Lottie from "react-lottie";
 import { Backdrop } from "@mui/material";
 
+import { useEffect, useState } from "react";
+import { socket } from "../../socket";
+import newOrderSVG from "../../assets/SVG/newOrder.json";
+import Button from "../../UI/Button";
+import {
+  alertNewOrder,
+  clearNewOrder,
+} from "../../redux/reducers/productSlice";
+
 function AdminLayout({ children }) {
-  const { loading, isUpdating } = useSelector((state) => state.productSlice);
+  const dispatch = useDispatch();
+  const { loading, isUpdating, isNewOrder } = useSelector(
+    (state) => state.productSlice
+  );
+
+  const [newOrder, setNewOrder] = useState(false);
+
+  useEffect(() => {
+    socket.on("receiveOrder", () => {
+      console.log("🚀 Order Received!");
+      setNewOrder(true);
+      dispatch(alertNewOrder());
+    });
+
+    return () => {
+      socket.off("receiveOrder");
+    };
+  }, []);
+  const handleClose = () => {
+    setNewOrder(false);
+  };
+
+  const handleCloseAlert = () => {
+    dispatch(clearNewOrder());
+  };
   return (
     <>
       {loading && !isUpdating && (
@@ -26,6 +59,32 @@ function AdminLayout({ children }) {
               height={200}
               width={200}
             />
+          </div>
+        </Backdrop>
+      )}
+      {isNewOrder && (
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={newOrder}
+          onClick={handleClose}
+        >
+          <div className="flex flex-col w-[80vw] justify-center">
+            <h1 className="text-pink text-2xl text-center">Có đơn hàng mới</h1>
+            <Lottie
+              isClickToPauseDisabled={true}
+              options={{
+                loop: true,
+                autoplay: true,
+                animationData: newOrderSVG,
+              }}
+              width={"35%"}
+            />
+            <Button
+              onClick={handleCloseAlert}
+              className="px-4 py-2 w-[20%] mx-auto"
+            >
+              Xác nhận
+            </Button>
           </div>
         </Backdrop>
       )}

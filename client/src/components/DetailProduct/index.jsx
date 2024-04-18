@@ -219,12 +219,12 @@ function DetailProduct() {
               khuyến khích khách hàng ĐỂ LẠI LỜI NHẮN, để nhận được tư vấn hoa
               phù hợp theo nhu cầu của quý khách.
             </p>
-            <div className="flex justify-around px-3">
+            <div className="flex justify-end px-3">
               <Button
                 onClick={() => {
                   addToCart();
                 }}
-                className="w-[40%] h-[45px] mx-auto"
+                className="w-[50%] h-[45px] my-2 px-3"
                 color="black"
               >
                 {loading && loadingOfAddToCart ? (
@@ -241,9 +241,6 @@ function DetailProduct() {
                 ) : (
                   "Thêm vào giỏ hàng"
                 )}
-              </Button>
-              <Button className="w-[45%] h-[45px] mx-auto" color="pink">
-                Mua ngay
               </Button>
             </div>
             <p>Gọi ngay: 1900 4702</p>
@@ -284,11 +281,11 @@ function DetailProduct() {
             (product) => product.displayMode === "public"
           )}
         />
-        <div className="full flex flex-col items-center mt-8">
+        {/* <div className="full flex flex-col items-center mt-8">
           <Button className={"px-12 py-2 mt-3"} color="black">
             Xem thêm
           </Button>
-        </div>
+        </div> */}
       </section>
     </main>
   );

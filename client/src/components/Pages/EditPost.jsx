@@ -49,7 +49,8 @@ function EditPost() {
 
   useEffect(() => {
     setTitle(currentBlog.title);
-  }, [currentBlog.title]);
+    setAvatar(currentBlog.avatar);
+  }, [currentBlog.title, currentBlog.avatar]);
 
   // Auto save title
   useEffect(() => {
@@ -143,6 +144,27 @@ function EditPost() {
     navigate(-1);
   };
 
+  const [avatar, setAvatar] = useState(null);
+  const handleAddAvatar = () => {
+    document.getElementById("avatar").click();
+  };
+  const handleChangeAvatar = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setAvatar(reader.result);
+        uploadImage("blogs_avatar", file, id)
+          .then((url) => {
+            dispatch(updateBlog({ avatar: url, id }));
+          })
+          .catch((error) => {
+            toast.error(error, toastConfig);
+          });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   return (
     <div className="edit-post px-5 overflow-x-hidden">
       <div className="flex p-2">
@@ -150,6 +172,21 @@ function EditPost() {
           <button onClick={handleBack} type="button">
             <ArrowBackIosIcon />
           </button>
+          <div className="relative w-12 h-12 bg-slate-200">
+            <input
+              name="avatar"
+              type="file"
+              id="avatar"
+              className="hidden"
+              onChange={handleChangeAvatar}
+            />
+            <img
+              onClick={handleAddAvatar}
+              src={avatar}
+              alt=""
+              className="absolute inset-0 z-[1] cursor-pointer w-full h-full object-cover"
+            />
+          </div>
           <input
             onFocus={(e) => e.target.select()}
             className="outline-none w-1/2 ml-2 text-xl"
@@ -174,26 +211,28 @@ function EditPost() {
           <SplitButton handleClick={handleAdd} options={options} />
         </div>
       </div>
-      <Editor
-        onKeyDown={handleKeyDown}
-        apiKey={process.env.REACT_APP_TINYMCE_API_KEY}
-        onInit={(evt, editor) => (editorRef.current = editor)}
-        initialValue={currentBlog.content}
-        init={{
-          statusbar: false,
-          height: 500,
-          resize: true,
-          menubar: false,
-          plugins: plugins,
-          toolbar: toolbar,
-          content_style:
-            "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-          ai_request: (request, respondWith) =>
-            respondWith.string(() =>
-              Promise.reject("See docs to implement AI Assistant")
-            ),
-        }}
-      />
+      <div className="pt-10 w-full h-full ">
+        <Editor
+          onKeyDown={handleKeyDown}
+          apiKey={process.env.REACT_APP_TINYMCE_API_KEY}
+          onInit={(evt, editor) => (editorRef.current = editor)}
+          initialValue={currentBlog.content}
+          init={{
+            statusbar: false,
+            height: 550,
+            resize: true,
+            menubar: false,
+            plugins: plugins,
+            toolbar: toolbar,
+            content_style:
+              "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+            ai_request: (request, respondWith) =>
+              respondWith.string(() =>
+                Promise.reject("See docs to implement AI Assistant")
+              ),
+          }}
+        />
+      </div>
     </div>
   );
 }

@@ -18,9 +18,9 @@ function Footer() {
           <li className="px-[1%] hover:scale-105 hover:text-pink">
             <Link to="/blog">Blog</Link>
           </li>
-          <li className="px-[1%] hover:scale-105 hover:text-pink">
+          {/* <li className="px-[1%] hover:scale-105 hover:text-pink">
             <a href="#about">Về chúng tôi</a>
-          </li>
+          </li> */}
         </ul>
       </nav>
       <div className="w-2/12 flex justify-center">

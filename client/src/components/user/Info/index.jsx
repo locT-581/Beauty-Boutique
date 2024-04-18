@@ -10,7 +10,7 @@ function User({ title }) {
   const { user } = useSelector((state) => state.authSlice);
   const { isNewOrder } = useSelector((state) => state.productSlice);
 
-  const [activeModes, setActiveModes] = useState("info");
+  const [activeModes, setActiveModes] = useState("history");
   const [orderStatus, setOrderStatus] = useState([]);
 
   useEffect(() => {
@@ -33,7 +33,21 @@ function User({ title }) {
       );
       setOrderHistory(orderHistory);
     };
-    if (Object.keys(user).length > 0) {
+    if (user && Object.keys(user).length > 0) {
+      getHistory(user.uid);
+    }
+  }, []);
+
+  useEffect(() => {
+    const getHistory = async (userId) => {
+      const data = await getOrderHistory(userId);
+      // get the order have status is pending
+      const orderHistory = data.filter(
+        (order) => order.orderStatus === activeTab
+      );
+      setOrderHistory(orderHistory);
+    };
+    if (user && Object.keys(user).length > 0) {
       getHistory(user.uid);
     }
   }, [activeTab, user]);
@@ -275,17 +289,6 @@ function User({ title }) {
           </div>
           <div
             onClick={() => {
-              setActiveModes("info");
-            }}
-            className={
-              "w-full px-4 mx-4 py-3 border cursor-pointer hover:bg-soft-pink " +
-              (activeModes === "info" ? " bg-soft-pink" : "")
-            }
-          >
-            Thông tin tài khoản
-          </div>
-          <div
-            onClick={() => {
               setActiveModes("history");
             }}
             className={
@@ -294,6 +297,17 @@ function User({ title }) {
             }
           >
             Lịch sử mua hàng
+          </div>
+          <div
+            onClick={() => {
+              setActiveModes("info");
+            }}
+            className={
+              "w-full px-4 mx-4 py-3 border cursor-pointer hover:bg-soft-pink " +
+              (activeModes === "info" ? " bg-soft-pink" : "")
+            }
+          >
+            Thông tin tài khoản
           </div>
 
           <div
@@ -375,7 +389,7 @@ function User({ title }) {
                 <div className="mt-10 overflow-y-auto">
                   {orderHistory?.map((order, i) => {
                     // Change timestamp to date
-                    const date = new Date(order.timestamp.seconds * 1000);
+                    const date = new Date(order.timestamp?.seconds * 1000);
                     const formattedDate = `${date.getDate()}/${
                       date.getMonth() + 1
                     }/${date.getFullYear()}`;
@@ -397,12 +411,12 @@ function User({ title }) {
                             {
                               orderStatus.find(
                                 (status) => status.id === order.orderStatus
-                              ).name
+                              )?.name
                             }
                           </div>
                         </div>
                         <div>
-                          {order.products.map((product) => {
+                          {order.products?.map((product) => {
                             return (
                               <div key={product.id} className="flex my-3 px-6 ">
                                 <img

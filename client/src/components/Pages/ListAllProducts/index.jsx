@@ -134,7 +134,7 @@ function ListAllProducts() {
     // filter products by category
     if (activeTab.root === "topic") {
       const tempProducts = [];
-      rawProducts.current.forEach((product) => {
+      rawProducts.current?.forEach((product) => {
         if (product.category === activeTab.sub) {
           tempProducts.push(product);
         }
@@ -228,7 +228,7 @@ function ListAllProducts() {
                 sắc, tên...ngay cả hình ảnh nữa đấy!
               </p>
               <div className="w-[55%] flex items-center justify-center mt-4">
-                <div className="w-full flex">
+                {/* <div className="w-full flex">
                   <input
                     type="text"
                     className="border rounded-full outline-none text-black pl-4 pr-11 py-1 w-full cursor-pointer"
@@ -237,7 +237,9 @@ function ListAllProducts() {
                     fontSize="large"
                     className="-ml-11 text-black opacity-45 cursor-pointer hover:opacity-70"
                   />
-                </div>
+                </div> */}
+                <div>Nhập hình ảnh </div>
+
                 <button
                   onMouseEnter={(e) => {
                     const span = document.createElement("span");
@@ -266,9 +268,9 @@ function ListAllProducts() {
                   <ImageSearchIcon fontSize="medium" color="inherit" />
                 </button>
               </div>
-              <Button className={"px-12 py-2 mt-9"} color="white">
+              {/* <Button className={"px-12 py-2 mt-9"} color="white">
                 Tìm kiếm
-              </Button>
+              </Button> */}
             </div>
           </div>
           <div className="best-seller px-[10%] my-20 ">
@@ -280,11 +282,11 @@ function ListAllProducts() {
                 (product) => product.displayMode === "public"
               )}
             />
-            <div className="full flex flex-col items-center mt-8">
+            {/* <div className="full flex flex-col items-center mt-8">
               <Button className={"px-12 py-2 mt-3"} color="black">
                 Xem thêm
               </Button>
-            </div>
+            </div> */}
           </div>
           <hr className="w-[85%] mx-auto " />
           <div className="birthday px-[10%] my-20 mt-5 ">
@@ -297,7 +299,13 @@ function ListAllProducts() {
               )}
             />
             <div className="full flex flex-col items-center mt-8">
-              <Button className={"px-12 py-2 mt-3"} color="black">
+              <Button
+                onClick={() => {
+                  setActiveTab({ root: "topic", sub: "birthday" });
+                }}
+                className={"px-12 py-2 mt-3"}
+                color="black"
+              >
                 Xem thêm
               </Button>
             </div>
@@ -313,7 +321,13 @@ function ListAllProducts() {
               )}
             />
             <div className="full flex flex-col items-center mt-8">
-              <Button className={"px-12 py-2 mt-3"} color="black">
+              <Button
+                onClick={() => {
+                  setActiveTab({ root: "topic", sub: "congratulation" });
+                }}
+                className={"px-12 py-2 mt-3"}
+                color="black"
+              >
                 Xem thêm
               </Button>
             </div>
