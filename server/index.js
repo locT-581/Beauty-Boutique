@@ -3,11 +3,14 @@ import dotenv from "dotenv";
 import app from "../server/app.js";
 import { firebaseServerApp } from "./config/firebaseConfig.js";
 
+import schedule from "node-schedule";
+
 dotenv.config();
 const PORT = process.env.PORT || 3001;
 
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { getFirestore } from "firebase-admin/firestore";
 
 const httpServer = createServer(app);
 
@@ -23,6 +26,54 @@ export const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
   },
+});
+
+const db = getFirestore();
+schedule.scheduleJob("* * * * *", async () => {
+  try {
+    console.log("🚀 Checking and updating orders...");
+
+    // Get all orders from firestore
+    db.collection("orders")
+      .get()
+      .then((orders) => {
+        // Loop through all orders and check if any order is expired then update userConfirm to true
+        orders.forEach(async (order) => {
+          const orderData = order.data();
+          const orderTime = orderData.timestamp;
+          const currentTime = new Date().getTime();
+          const diff = currentTime - orderTime;
+
+          if (diff > 1000 * 60 * 5 && !orderData.userConfirm) {
+            console.log("🚀 Order expired!");
+            await db
+              .collection("orders")
+              .doc(order.id)
+              .update({
+                userConfirm: true,
+              })
+              .then(() => {
+                const historyRef = db
+                  .collection("users")
+                  .doc(userId)
+                  .collection("orders-history");
+                historyRef
+                  .doc(productId)
+                  .get()
+                  .then((doc) => {
+                    if (doc.exists) {
+                      historyRef.doc(productId).update({
+                        userConfirm: true,
+                      });
+                    }
+                  });
+              });
+          }
+        });
+      });
+  } catch (error) {
+    console.error("Error checking and updating orders:", error);
+  }
 });
 
 io.on("connection", (socket) => {

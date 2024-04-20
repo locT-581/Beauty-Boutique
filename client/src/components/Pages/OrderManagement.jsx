@@ -191,7 +191,7 @@ function OrderManagement({ title }) {
                         />
                       </div>
                     </div>
-                    <div className="w-1/2">
+                    {/* <div className="w-1/2">
                       <div className="w-full px-[4%] mt-5 ">
                         <label htmlFor="deliveryTime" className="block mb-1">
                           <span className="text-pink">*</span>Khoảng thời gian
@@ -205,7 +205,7 @@ function OrderManagement({ title }) {
                           className="w-full border border-gray-500 py-[4px] px-4 rounded-full outline-none "
                         />
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 

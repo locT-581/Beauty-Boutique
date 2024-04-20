@@ -134,6 +134,10 @@ function ListAllProducts() {
     // filter products by category
     if (activeTab.root === "topic") {
       const tempProducts = [];
+      if (activeTab.sub === "all") {
+        setProducts(rawProducts.current);
+        return;
+      }
       rawProducts.current?.forEach((product) => {
         if (product.category === activeTab.sub) {
           tempProducts.push(product);
@@ -146,12 +150,16 @@ function ListAllProducts() {
         setProducts(rawProducts.current);
         return;
       }
-      rawProducts.current.forEach((product) => {
-        product.ingredients.forEach((ingredient) => {
+      rawProducts.current?.forEach((product) => {
+        product.ingredients?.forEach((ingredient) => {
           if (ingredient.id === activeTab.sub) {
             tempProducts.push(product);
           }
         });
+      });
+      setFilter({
+        ...filter,
+        flowerType: [activeTab.sub],
       });
       setProducts(tempProducts);
     } else if (activeTab.root === "color") {
@@ -163,47 +171,94 @@ function ListAllProducts() {
           }
         });
       });
+      setFilter({
+        ...filter,
+        color: [activeTab.sub],
+      });
       setProducts(tempProducts);
     } else {
       setProducts(rawProducts.current);
     }
   }, [activeTab]);
 
-  // useEffect(() => {
-  //   if (filter.flowerType.length === 0 && filter.color.length === 0) {
-  //     if (activeTab.root !== "all") {
-  //       const tempProducts = [];
-  //       rawProducts.current.forEach((product) => {
-  //         if (product.category === activeTab.sub) {
-  //           tempProducts.push(product);
-  //         }
-  //       });
-  //       setProducts(tempProducts);
-  //     } else {
-  //       setProducts(rawProducts.current);
-  //     }
-  //     return;
-  //   }
-  //   let tempProducts = [];
-  //   products.forEach((product) => {
-  //     product.ingredients.forEach((ingredient) => {
-  //       if (filter.flowerType.includes(ingredient.id)) {
-  //         tempProducts.push(product);
+  useEffect(() => {
+    console.log(filter);
+    const tempProducts = [];
 
-  //         // Remove duplicate in tempProducts
-  //         tempProducts = tempProducts.filter(
-  //           (product, index, self) =>
-  //             index === self.findIndex((p) => p.id === product.id)
-  //         );
-  //       }
-  //     });
-  //     setProducts(tempProducts);
-  //   });
-  // }, [filter]);
+    // Handle filter by flower type
+    if (filter.flowerType.length === 0) {
+      rawProducts.current?.forEach((product) => {
+        tempProducts.push(product);
+      });
+    } else {
+      rawProducts.current?.forEach((product) => {
+        filter.flowerType.forEach((type) => {
+          product.ingredients.forEach((ingredient) => {
+            if (ingredient.id === type) {
+              let find = false;
+              // Check if product already in list
+              tempProducts.forEach((tempProduct) => {
+                if (tempProduct.id === product.id) find = true;
+              });
+              if (!find) tempProducts.push(product);
+            }
+          });
+        });
+      });
+    }
+
+    // Handle filter by color
+    if (filter.color.length === 0) {
+    } else {
+      const temp = [];
+      tempProducts?.forEach((product) => {
+        filter.color?.forEach((color) => {
+          product.colors?.forEach((productColor) => {
+            if (productColor === color) {
+              let find = false;
+              // Check if product already in list
+              temp.forEach((tempProduct) => {
+                if (tempProduct.id === product.id) find = true;
+              });
+              if (!find) temp.push(product);
+            }
+          });
+        });
+      });
+      tempProducts.length = 0;
+      temp.forEach((product) => {
+        tempProducts.push(product);
+      });
+    }
+
+    setProducts(tempProducts);
+  }, [filter]);
 
   useEffect(() => {
     console.log(products);
   }, [products]);
+
+  const handleSort = (mode) => {
+    const tempProducts = [...products];
+    if (mode === "newest") {
+      tempProducts.sort((a, b) => {
+        return b.timestamp - a.timestamp;
+      });
+    } else if (mode === "lowest") {
+      tempProducts.sort((a, b) => {
+        return a.price - b.price;
+      });
+    } else {
+      tempProducts.sort((a, b) => {
+        return b.price - a.price;
+      });
+    }
+    setProducts(tempProducts);
+  };
+
+  useEffect(() => {
+    handleSort(sortMode);
+  }, [sortMode]);
 
   return (
     <>
@@ -343,6 +398,7 @@ function ListAllProducts() {
               (activeTab.sub === "grandOpening" && "Hoa khai trương") ||
               (activeTab.sub === "love" && "Hoa tình yêu")}
           </h2>
+
           <div className="w-full flex">
             <div className="w-3/12 flex justify-end">
               <div className="w-4/5">
@@ -357,6 +413,7 @@ function ListAllProducts() {
                         className="w-full flex items-center justify-start gap-6 pl-[15%]"
                       >
                         <input
+                          checked={filter.flowerType.includes(flower.id)}
                           onChange={(e) => {
                             if (e.target.checked) {
                               setFilter({
@@ -396,6 +453,7 @@ function ListAllProducts() {
                         className="w-full flex items-center justify-start gap-6 pl-[15%]"
                       >
                         <input
+                          checked={filter.color.includes(color.id)}
                           onChange={(e) => {
                             if (e.target.checked) {
                               setFilter({
@@ -423,22 +481,50 @@ function ListAllProducts() {
                 </div>
               </div>
             </div>
-            <div className="w-9/12 flex justify-end">
-              <div className="w-[90%] flex flex-wrap gap-6">
-                {products?.map((product) =>
-                  product.displayMode === "public" ? (
-                    <ProductCard
-                      id={product.id}
-                      className={"w-[200px]"}
-                      key={product.id}
-                      title={product.name}
-                      price={product.price}
-                      image={product.avatar}
-                    />
-                  ) : (
-                    <></>
-                  )
-                )}
+            <div className="w-9/12 flex flex-col justify-end">
+              <nav className="flex gap-4 my-5 pl-20">
+                <div
+                  onClick={() => setSortMode("newest")}
+                  className={`cursor-pointer ${
+                    sortMode === "newest" ? "text-pink" : ""
+                  }`}
+                >
+                  Mới nhất
+                </div>
+                <div
+                  onClick={() => setSortMode("lowest")}
+                  className={`cursor-pointer ${
+                    sortMode === "lowest" ? "text-pink" : ""
+                  }`}
+                >
+                  Giá thấp đến cao
+                </div>
+                <div
+                  onClick={() => setSortMode("highest")}
+                  className={`cursor-pointer ${
+                    sortMode === "highest" ? "text-pink" : ""
+                  }`}
+                >
+                  Giá cao đến thấp
+                </div>
+              </nav>
+              <div className="w-full flex justify-end">
+                <div className="w-[90%] flex flex-wrap gap-6">
+                  {products?.map((product) =>
+                    product.displayMode === "public" ? (
+                      <ProductCard
+                        id={product.id}
+                        className={"w-[200px]"}
+                        key={product.id}
+                        title={product.name}
+                        price={product.price}
+                        image={product.avatar}
+                      />
+                    ) : (
+                      <></>
+                    )
+                  )}
+                </div>
               </div>
             </div>
           </div>

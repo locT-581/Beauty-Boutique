@@ -312,7 +312,7 @@ function Cart() {
                       </div>
                     </div>
                   </div>
-                  <div className="w-full px-[4%] mt-5 ">
+                  <div className="w-full px-[2%] mt-5 ">
                     <label htmlFor="password" className="block mb-1">
                       <span className="text-pink">*</span>Địa chỉ
                     </label>
@@ -365,7 +365,7 @@ function Cart() {
                       </label>
                     </div>
 
-                    <div className="flex mt-2">
+                    {/* <div className="flex mt-2">
                       <input
                         onChange={handleChange}
                         checked={userForm.paymentMethod === "bank"}
@@ -376,7 +376,7 @@ function Cart() {
                         className="mr-2 cursor-pointer"
                       />
                       <label htmlFor="payment">Ngân hàng</label>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </form>
@@ -544,18 +544,6 @@ function Cart() {
                             <div className="flex items-center">
                               <button
                                 onClick={() => {
-                                  handleIncrement(product.product.id);
-                                }}
-                                type="button"
-                                className="text-lg -mb-[3px] mr-1 text-gray-600"
-                              >
-                                +
-                              </button>
-                              <span className="text-base mx-1">
-                                {product.quantity}
-                              </span>
-                              <button
-                                onClick={() => {
                                   handleDecrement(product.product.id);
                                 }}
                                 type="button"
@@ -565,6 +553,18 @@ function Cart() {
                                   fontSize="10px"
                                   className="w-[10px]"
                                 />
+                              </button>
+                              <span className="text-base mx-1">
+                                {product.quantity}
+                              </span>
+                              <button
+                                onClick={() => {
+                                  handleIncrement(product.product.id);
+                                }}
+                                type="button"
+                                className="text-lg -mb-[3px] mr-1 text-gray-600"
+                              >
+                                +
                               </button>
                             </div>
                           </TableCell>

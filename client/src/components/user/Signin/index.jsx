@@ -5,7 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import addressAPI from "../../../apis/addressAPI";
-import { userSignupAsync } from "../../../redux/reducers/authSlice";
+import {
+  loadUserAsync,
+  userSignupAsync,
+} from "../../../redux/reducers/authSlice";
 import { closeBackDrop, showBackDrop } from "../../../redux/reducers/uiSlice";
 import Login from "../Login";
 import CloseIcon from "@mui/icons-material/Close";
@@ -36,6 +39,7 @@ function SignIn() {
     };
     fetchCities();
   }, []);
+
   const handleChange = (e) => {
     setUserForm({ ...userForm, [e.target.id]: e.target.value });
   };
@@ -96,6 +100,7 @@ function SignIn() {
       return;
     }
     dispatch(userSignupAsync(userForm));
+    dispatch(loadUserAsync());
     console.log(userForm);
   };
   const handleChangeLoginPage = () => {

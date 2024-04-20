@@ -68,6 +68,14 @@ function CatagoriesNav({ className = "", handleActiveTab, ...rest }) {
             title={
               <div className="w-52 flex flex-col bg-white text-black py-1">
                 <Button
+                  onClick={() => handleClick("topic", "all")}
+                  color="white"
+                  className="w-full hover:bg-soft-pink hover:text-black text-start text-base font-fontCabin px-6 py-2"
+                >
+                  Tất cả
+                </Button>
+                <hr />
+                <Button
                   onClick={() => handleClick("topic", "birthday")}
                   color="white"
                   className="w-full hover:bg-soft-pink hover:text-black text-base font-fontCabin px-6 py-2 text-start"
@@ -122,6 +130,14 @@ function CatagoriesNav({ className = "", handleActiveTab, ...rest }) {
             title={
               <div className="w-52 flex flex-col bg-white text-black py-1">
                 <Button
+                  onClick={() => handleClick("flower", "all")}
+                  color="white"
+                  className="w-full hover:bg-soft-pink hover:text-black text-start text-base font-fontCabin px-6 py-2"
+                >
+                  Tất cả
+                </Button>
+                <hr />
+                <Button
                   onClick={() => handleClick("flower", "RkpfCocSqkUrGWFCBXPD")}
                   color="white"
                   className="w-full hover:bg-soft-pink hover:text-black text-base font-fontCabin px-6 py-2 text-start"
@@ -159,14 +175,6 @@ function CatagoriesNav({ className = "", handleActiveTab, ...rest }) {
                   className="w-full hover:bg-soft-pink hover:text-black text-start text-base font-fontCabin px-6 py-2"
                 >
                   Hoa bồ công anh
-                </Button>
-                <hr />
-                <Button
-                  onClick={() => handleClick("flower", "all")}
-                  color="white"
-                  className="w-full hover:bg-soft-pink hover:text-black text-start text-base font-fontCabin px-6 py-2"
-                >
-                  Tất cả
                 </Button>
               </div>
             }

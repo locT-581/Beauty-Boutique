@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { getOrderHistory, getOrderStatus } from "../../../utils/storage";
 import Button from "../../../UI/Button";
-import { collection, getDocs, updateDoc } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../../../config/firebaseConfig";
+import addressAPI from "../../../apis/addressAPI";
+import { toast } from "react-toastify";
+import toastConfig from "../../../config/toastConfig";
 
+import { loadUserAsync } from "../../../redux/reducers/authSlice";
 function User({ title }) {
-  const { user } = useSelector((state) => state.authSlice);
+  const { user, loading, message, error } = useSelector(
+    (state) => state.authSlice
+  );
   const { isNewOrder } = useSelector((state) => state.productSlice);
 
   const [activeModes, setActiveModes] = useState("history");
@@ -79,6 +85,68 @@ function User({ title }) {
       }
     });
     window.location.reload();
+  };
+
+  // ----------------- User info -----------------
+
+  const [cities, setCities] = useState([]);
+  const [userForm, setUserForm] = useState({
+    fullName: user.fullName,
+    email: user.email,
+    phoneNumber: user.phoneNumber,
+    city: user.city,
+    address: user.address,
+  });
+  const handleChange = (e) => {
+    setUserForm({
+      ...userForm,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  useEffect(() => {
+    setUserForm({
+      fullName: user.fullName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      city: user.city,
+      address: user.address,
+    });
+  }, [user]);
+
+  const handleCityChange = (e) => {
+    setUserForm({ ...userForm, city: e.target.value });
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await addressAPI.getCities();
+        setCities(data.cities);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, []);
+  const dispatch = useDispatch();
+  const handleUpdateInfo = async () => {
+    console.log("ashc");
+    try {
+      updateDoc(doc(db, "users", user.uid), {
+        fullName: userForm.fullName,
+        email: userForm.email,
+        phoneNumber: userForm.phoneNumber,
+        city: userForm.city,
+        address: userForm.address,
+      }).then(() => {
+        console.log("Document successfully updated!");
+        dispatch(loadUserAsync());
+        window.location.reload();
+        toast.success("Cập nhật thông tin thành công", toastConfig);
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -191,7 +259,7 @@ function User({ title }) {
                         />
                       </div>
                     </div>
-                    <div className="w-1/2">
+                    {/* <div className="w-1/2">
                       <div className="w-full px-[4%] mt-5 ">
                         <label htmlFor="deliveryTime" className="block mb-1">
                           <span className="text-pink">*</span>Khoảng thời gian
@@ -205,7 +273,7 @@ function User({ title }) {
                           className="w-full border border-gray-500 py-[4px] px-4 rounded-full outline-none "
                         />
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
@@ -465,6 +533,106 @@ function User({ title }) {
                       </div>
                     );
                   })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeModes === "info" && (
+            <div className="w-[80%] p-10 mt-8 ">
+              <h2 className="font-fontItalianno text-5xl mx-auto text-center ">
+                Thông tin tài khoản
+              </h2>
+              <div className="w-full flex flex-col border mt-5 px-5 pb-4 pt-2">
+                <p className="px-5 py-2 font-semibold">
+                  Chỉnh sửa thông tin cá nhân
+                </p>
+                <hr className="border-[1px]" />
+                <div className="w-full flex">
+                  <div className="w-1/2">
+                    <div className="w-full px-[4%] mt-5 ">
+                      <label htmlFor="email" className="block mb-1">
+                        <span className="text-pink">*</span>Họ tên
+                      </label>
+                      <input
+                        value={userForm.fullName}
+                        onChange={handleChange}
+                        autoComplete="off"
+                        required
+                        type="text"
+                        id="fullName"
+                        className="w-full border border-gray-500 py-[4px] px-4 rounded-full outline-none "
+                      />
+                    </div>
+                    <div className="w-full px-[4%] mt-5 ">
+                      <label htmlFor="password" className="block mb-1">
+                        <span className="text-pink">*</span>Email
+                      </label>
+                      <input
+                        value={userForm.email}
+                        onChange={handleChange}
+                        required
+                        type="email"
+                        id="email"
+                        className="w-full border border-gray-500 py-[4px] px-4 rounded-full outline-none "
+                      />
+                    </div>
+                    <div className="w-full px-[4%] mt-5 ">
+                      <label htmlFor="city" className="block mb-1 mt-5">
+                        <span className="text-pink">*</span>Thành phố
+                      </label>
+                      <select
+                        name="city"
+                        id="city"
+                        value={userForm.city}
+                        onChange={handleCityChange}
+                        className="w-full border border-gray-500 py-[4px] px-4 rounded-full outline-none"
+                      >
+                        {cities.map((city) => (
+                          <option key={city.id} value={city.id}>
+                            {city.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="w-1/2">
+                    <div className="w-full px-[4%] mt-5 ">
+                      <label htmlFor="email" className="block mb-1">
+                        <span className="text-pink">*</span>Số điện thoại
+                      </label>
+                      <input
+                        value={userForm.phoneNumber}
+                        onChange={handleChange}
+                        autoComplete="off"
+                        required
+                        type="text"
+                        id="phoneNumber"
+                        className="w-full border border-gray-500 py-[4px] px-4 rounded-full outline-none "
+                      />
+                    </div>
+                    <div className="w-full px-[4%] mt-5 ">
+                      <label htmlFor="password" className="block mb-1">
+                        <span className="text-pink">*</span>Địa chỉ
+                      </label>
+                      <input
+                        value={userForm.address}
+                        onChange={handleChange}
+                        required
+                        type="text"
+                        id="address"
+                        className="w-full border border-gray-500 py-[4px] px-4 rounded-full outline-none "
+                      />
+                    </div>
+                    <div className="w-full flex items-end justify-end px-5">
+                      <Button
+                        onClick={handleUpdateInfo}
+                        className="px-5 py-2 mt-10"
+                      >
+                        Cập nhật
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
