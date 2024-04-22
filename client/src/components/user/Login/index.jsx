@@ -80,12 +80,12 @@ function Login() {
       >
         <div className="w-full px-[4%] mt-5 ">
           <label htmlFor="email" className="block mb-1">
-            <span className="text-pink">*</span>Email/Số điện thoại
+            <span className="text-pink">*</span>Email
           </label>
           <input
             onChange={handleChangeEmail}
             value={email}
-            placeholder="contact@beauty.com / 0123456789"
+            placeholder="contact@beauty.com"
             required
             type="email | tel"
             id="email"
